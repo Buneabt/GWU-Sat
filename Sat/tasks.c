@@ -22,7 +22,7 @@ void TaskCheckStatus(void)
 {
     for(;;)
     {
-        checkComponentStatus();
+        checkComponentStatus(); //This will actually call each component using the config defined parameters and calling thw i2C functions.
         cacheStateVectors();
         cacheSystemErrors();
 

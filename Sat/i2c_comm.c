@@ -6,6 +6,7 @@ void I2C_Init(void) {
 }
 
 void I2C_SendCommand(uint8_t command, uint8_t parameter) { //This is supposed to be modular as all communication will be done through i2C
+                                                           //I don't know if the command format is different so I may haev to add more protocols based on the component
     // Send command over I2C
 }
 

@@ -1,8 +1,12 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+#include <time.h>
+
 #define FCY 16000000UL
 #define I2C_BAUD 100000UL
+
+extern double Mission_Time;
 
 //Put all possible board commands for each component here along with a comment of what it does
 
