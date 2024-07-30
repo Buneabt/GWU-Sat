@@ -3,7 +3,21 @@
 
 #define FCY 16000000UL
 #define I2C_BAUD 100000UL
+
+//Put all possible board commands for each component here along with a comment of what it does
+
+//Battery
 #define CMD_Board_Status 0x01
+
+//Eps
+
+//Transceiver
+
+//Antenna
+
+
+
+//--Definitions--//
 
 #define BATTERY_LOW_THRESHOLD 30  // Battery level threshold to pause tasks
 #define BATTERY_RESUME_THRESHOLD 50 // Battery level threshold to resume tasks
