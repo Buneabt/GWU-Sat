@@ -10,9 +10,15 @@ This is the beginning of the codebase for GWU-Sat which aims to send experimenta
 
 ## Things to Do
 
+**Priority**
+- Build inside compiler
+    - [ ] Try to build main inside of vscode, should work since non of the tasks actually do anything all I need to salvo.h and it should build.
+
 - Build example file onto PPM D
     - [ ] Get to compile, must use pick-it 3
-    - [ ] 
+
+---------------------------------------------
+
 - Begin Testing of components 
     - [ ] Battery
     - [ ] EPS
@@ -20,6 +26,7 @@ This is the beginning of the codebase for GWU-Sat which aims to send experimenta
     - [ ] ADCS
 - Create Barebones start-up system
     - [ ] Send Pings to each individual component
+    - [ ] Build correct i2C constructor for each component if they differ
     - [x] Begin a timer
 - Thrusters
     - [ ] Inside Tasks.c and Tasks.h make experiments 1 through 6, right now I only have a general ***void TaskExecuteExperiment(void)*** function
