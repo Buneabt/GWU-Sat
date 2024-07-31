@@ -1,6 +1,8 @@
 #include <salvo.h>
 #include "tasks.h"
 #include "config.h"
+#include "battery.h"
+
 
 // Global variables
 OSSemID semaphoreExperiments;
@@ -51,19 +53,6 @@ void TaskPowerManagement(void)
     }
 }
 
-void TaskExecuteExperiment(void)
-{
-    for(;;)
-    {
-        OSSemPend(semaphoreExperiments, OSNO_TIMEOUT); // Wait for permission to proceed
-
-        // Execute experiment
-        runExperiments();
-
-        OS_Yield();
-    }
-}
-
 void TaskCommunication(void)
 {
     for(;;)
@@ -76,3 +65,86 @@ void TaskCommunication(void)
         OS_Yield();
     }
 }
+
+//Exp Tasks Below, instead of using semaphores for each task make it time based?
+
+void TaskExecuteExperiment1(void)
+{
+    for(;;)
+    {
+        OSSemPend(semaphoreExperiments, OSNO_TIMEOUT); // Wait for permission to proceed
+
+        // Execute experiment
+        runExperiments();
+
+        OS_Yield();
+    }
+}
+
+void TaskExecuteExperiment2(void)
+{
+    for(;;)
+    {
+        OSSemPend(semaphoreExperiments, OSNO_TIMEOUT); // Wait for permission to proceed
+
+        // Execute experiment
+        runExperiments();
+
+        OS_Yield();
+    }
+}
+
+void TaskExecuteExperiment3(void)
+{
+    for(;;)
+    {
+        OSSemPend(semaphoreExperiments, OSNO_TIMEOUT); // Wait for permission to proceed
+
+        // Execute experiment
+        runExperiments();
+
+        OS_Yield();
+    }
+}
+
+void TaskExecuteExperiment4(void)
+{
+    for(;;)
+    {
+        OSSemPend(semaphoreExperiments, OSNO_TIMEOUT); // Wait for permission to proceed
+
+        // Execute experiment
+        runExperiments();
+
+        OS_Yield();
+    }
+}
+
+void TaskExecuteExperiment5(void)
+{
+    for(;;)
+    {
+        OSSemPend(semaphoreExperiments, OSNO_TIMEOUT); // Wait for permission to proceed
+
+        // Execute experiment
+        runExperiments();
+
+        OS_Yield();
+    }
+}
+
+void TaskExecuteExperiment6(void)
+{
+    for(;;)
+    {
+        OSSemPend(semaphoreExperiments, OSNO_TIMEOUT); // Wait for permission to proceed
+
+        // Execute experiment
+        runExperiments();
+
+        OS_Yield();
+    }
+}
+
+
+

@@ -28,10 +28,10 @@ extern double Mission_Time;
 
 // Define priorities for tasks
 #define PRIO_INIT         1
-#define PRIO_STATUS       2
-#define PRIO_POWER        3
-#define PRIO_EXPERIMENT   4
-#define PRIO_COMM         5
+#define PRIO_STATUS       1
+#define PRIO_POWER        1
+#define PRIO_EXPERIMENT   1
+#define PRIO_COMM         1
 
 // Define stack sizes for tasks
 #define TASK_INIT_STACK         128
