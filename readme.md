@@ -6,7 +6,7 @@ This is the beginning of the codebase for GWU-Sat which aims to send experimenta
 **Programming Language**
 
 ***This project will be programmed mainly using C for the OBC system and MatLab for the ADCS portion of the project.***
-***Unles Stated all programming files will be inside the **SAT** Folder***
+Unless Stated all programming files will be inside the **SAT** Folder
 
 ## Things to Do
 
