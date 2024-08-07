@@ -1,6 +1,8 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+#include "../salvocfg.h"
+
 #include <time.h>
 
 #define FCY 16000000UL

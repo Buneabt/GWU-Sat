@@ -35,7 +35,7 @@ Version number, e.g. v3.2.3.
 **                                                         **
 ****                                                     ****
 ************************************************************/
-#include <salvover.h>
+#include "salvover.h"
 
 
 /************************************************************
@@ -46,7 +46,7 @@ Define constants (e.g. OSDONT_START) used throughout.
 **                                                         **
 ****                                                     ****
 ************************************************************/
-#include <salvodef.h>
+#include "salvodef.h"
 
 
 /************************************************************
@@ -58,7 +58,7 @@ accordingly.
 **                                                         **
 ****                                                     ****
 ************************************************************/
-#include <salvoadc.h>
+#include "salvoadc.h"
 
 
 /************************************************************
@@ -88,7 +88,7 @@ salvolib.h.
 //  therefore salvocfg.h is disregarded -- we use
 //  salvolib.h in its place.
 #if OSMAKE_LIBRARY
-#include <salvolib.h>
+#include "salvolib.h"
 
 // If OSMAKE_LIBRARY is FALSE, then we're either doing a
 //  library build, or a	source-code build. Either way, we
@@ -117,8 +117,8 @@ salvolib.h.
 
 
 #if OSUSE_LIBRARY
-#include <salvolbo.h>
-#include <salvolib.h>
+#include "salvolbo.h"
+#include "salvolib.h"
 
 #if   OSLIBRARY_TYPE == OSF
 #define OSSALVOLITE						TRUE
@@ -171,7 +171,7 @@ All builds require port-specific headers.
 **                                                         **
 ****                                                     ****
 ************************************************************/
-#include <salvopsh.h>
+#include "salvopsh.h"
 
 
 /************************************************************
@@ -183,7 +183,7 @@ defined.
 **                                                         **
 ****                                                     ****
 ************************************************************/
-#include <salvoscb.h>
+#include "salvoscb.h"
 
 
 /************************************************************
@@ -194,7 +194,7 @@ Catch obsolete / invalid configuration parameters.
 **                                                         **
 ****                                                     ****
 ************************************************************/
-#include <salvoocp.h>
+#include "salvoocp.h"
 
 
 /************************************************************
@@ -217,7 +217,7 @@ Compiler-specific workarounds.
 **                                                         **
 ****                                                     ****
 ************************************************************/
-#include <salvowar.h>
+#include "salvowar.h"
 
 
 /************************************************************
@@ -504,7 +504,7 @@ statically allocated parameters, etc., like PICC and Cx51).
 **                                                         **
 ****                                                     ****
 ************************************************************/
-#include <salvomcg.h>
+#include "salvomcg.h"
 
 
 /************************************************************
@@ -517,7 +517,7 @@ with banked memory (e.g. PIC16) or special memory qualifiers
 **                                                         **
 ****                                                     ****
 ************************************************************/
-#include <salvoloc.h>
+#include "salvoloc.h"
 
 
 /************************************************************
@@ -528,7 +528,7 @@ Native typedefs (e.g. OStypeInt8u).
 **                                                         **
 ****                                                     ****
 ************************************************************/
-#include <salvotyp.h>
+#include "salvotyp.h"
 
 
 /************************************************************
@@ -540,7 +540,7 @@ on OSCTXSW_METHOD).
 **                                                         **
 ****                                                     ****
 ************************************************************/
-#include <salvoctx.h>
+#include "salvoctx.h"
 
 
 /************************************************************
@@ -551,7 +551,7 @@ Critical section macros (e.g. OSEnterCritical()).
 **                                                         **
 ****                                                     ****
 ************************************************************/
-#include <salvocri.h>
+#include "salvocri.h"
 
 
 /************************************************************
@@ -562,7 +562,7 @@ Macro prototypes (e.g. OS_WaitBinSem()).
 **                                                         **
 ****                                                     ****
 ************************************************************/
-#include <salvompt.h>
+#include "salvompt.h"
 
 
 /************************************************************
@@ -573,7 +573,7 @@ Structure definitions (e.g. tcbs).
 **                                                         **
 ****                                                     ****
 ************************************************************/
-#include <salvostr.h>
+#include "salvostr.h"
 
 
 /************************************************************
@@ -585,7 +585,7 @@ are located in mem.c.
 **                                                         **
 ****                                                     ****
 ************************************************************/
-#include <salvomem.h>
+#include "salvomem.h"
 
 
 /************************************************************
@@ -596,7 +596,7 @@ General macros (e.g. OSTimedOut()).
 **                                                         **
 ****                                                     ****
 ************************************************************/
-#include <salvomac.h>
+#include "salvomac.h"
 
 
 /************************************************************
@@ -607,7 +607,7 @@ Function Prototypes (e.g. OSWaitEvent()).
 **                                                         **
 ****                                                     ****
 ************************************************************/
-#include <salvofpt.h>
+#include "salvofpt.h"
 
 
 /************************************************************

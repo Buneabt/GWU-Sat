@@ -1,7 +1,6 @@
-#include <salvo.h>
+#include "../salvo.h"
 #include "tasks.h"
 #include "config.h"
-#include "battery.h"
 
 
 // Global variables

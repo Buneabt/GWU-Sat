@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <time.h>
-#include "Salvo/salvo.h"
-#include "Salvo/salvocfg.h"
+#include "../salvo.h"
+#include "../salvocfg.h"
 #include "tasks.h"
 #include "config.h"
 #include "i2c_comm.h"

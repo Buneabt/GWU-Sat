@@ -1,7 +1,7 @@
 #ifndef TASKS_H
 #define TASKS_H
 
-#include <salvo.h>
+#include "../salvo.h"
 
 // External declaration of semaphores
 extern OSSemID semaphoreExperiments;

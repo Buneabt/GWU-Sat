@@ -4,6 +4,8 @@
         "config.h": "c",
         "i2c_comm.h": "c",
         "salvocfg.h": "c",
-        "salvover.h": "c"
+        "salvover.h": "c",
+        "salvo.h": "c",
+        "time.h": "c"
     }
 }
