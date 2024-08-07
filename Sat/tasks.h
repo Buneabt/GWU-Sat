@@ -14,12 +14,13 @@ void TaskCacheData(void);
 void TaskCommunication(void);
 void TaskPowerManagement(void);
 
-void TaskExecuteExperiment1(void); //Comment what each exp does.
-void TaskExecuteExperiment2(void);
-void TaskExecuteExperiment3(void);
-void TaskExecuteExperiment4(void);
-void TaskExecuteExperiment5(void);
-void TaskExecuteExperiment6(void);
+void TaskExecuteExperiment0(void); // Experiment 0: Initial Thruster Tests
+void TaskExecuteExperiment1(void); // Experiment 1: Using Rotation for Translational Motion
+void TaskExecuteExperiment2(void); // Experiment 2: Rate of Alignment Success for Point on Earth
+void TaskExecuteExperiment3(void); // Experiment 3: Affect of Rotation on Solar Panel Intake
+void TaskExecuteExperiment4(void); // Experiment 5: Rate of Deviation from Thruster Force Differences
+void TaskExecuteExperiment5(void); // Experiment 6: General Lifetime Monitoring (Semaphore should always be set to "1" once experiments begin)
+void TaskExecuteExperiment6(void); // Experiment 7: Hull Deterioration from Plasma Arc Emissions
 
 
 //Add more tasks down here to declare them

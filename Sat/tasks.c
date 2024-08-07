@@ -68,6 +68,19 @@ void TaskCommunication(void)
 
 //Exp Tasks Below, instead of using semaphores for each task make it time based?
 
+void TaskExecuteExperiment0(void)
+{
+    for(;;)
+    {
+        OSSemPend(semaphoreExperiments, OSNO_TIMEOUT); // Wait for permission to proceed
+
+        // Execute experiment
+        runExperiments();
+
+        OS_Yield();
+    }
+}
+
 void TaskExecuteExperiment1(void)
 {
     for(;;)

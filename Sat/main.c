@@ -21,8 +21,18 @@ int main(void)
     OSCreateTask(TaskInitialize, TASK_INIT_STACK, PRIO_INIT);
     OSCreateTask(TaskCheckStatus, TASK_STATUS_STACK, PRIO_STATUS);
     OSCreateTask(TaskPowerManagement, TASK_POWER_STACK, PRIO_POWER);
-    OSCreateTask(TaskExecuteExperiment, TASK_EXPERIMENT_STACK, PRIO_EXPERIMENT);
     OSCreateTask(TaskCommunication, TASK_COMM_STACK, PRIO_COMM);
+
+    OSCreateTask(TaskExecuteExperiment0, TASK_EXPERIMENT_STACK, PRIO_EXPERIMENT);
+    OSCreateTask(TaskExecuteExperiment1, TASK_EXPERIMENT_STACK, PRIO_EXPERIMENT);
+    OSCreateTask(TaskExecuteExperiment2, TASK_EXPERIMENT_STACK, PRIO_EXPERIMENT);
+    OSCreateTask(TaskExecuteExperiment3, TASK_EXPERIMENT_STACK, PRIO_EXPERIMENT);
+    OSCreateTask(TaskExecuteExperiment4, TASK_EXPERIMENT_STACK, PRIO_EXPERIMENT);
+    OSCreateTask(TaskExecuteExperiment5, TASK_EXPERIMENT_STACK, PRIO_EXPERIMENT);
+    OSCreateTask(TaskExecuteExperiment6, TASK_EXPERIMENT_STACK, PRIO_EXPERIMENT);
+
+
+
 
     // Initialize mission time
     time_t missionStartTime = time(NULL);
