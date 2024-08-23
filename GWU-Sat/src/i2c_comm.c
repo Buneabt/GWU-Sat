@@ -1,6 +1,5 @@
 #include "i2c_comm.h"
-#include <xc.h>        // Microcontroller-specific header
-#include <libpic30.h>  // Include delay functions
+#include <p33FJ256GP710.h>  
 
 #define I2C_ADDRESS 0x2A // Define the I2C address of the slave device
 #define FCY 16000000UL   // Define the instruction cycle frequency

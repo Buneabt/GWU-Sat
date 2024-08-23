@@ -5,6 +5,10 @@
 #define TICKS_PER_SECOND       100
 #define TICKS_PER_MINUTE       (TICKS_PER_SECOND * 60)
 
+// Battery Definitions
+#define LOW_POWER_THRESHOLD 15000
+
+
 // Task Control Block Pointers
 #define TASK_SYSTEM_INIT_P     OSTCBP(1)
 #define TASK_START_SYSTEM_P    OSTCBP(2)
@@ -12,6 +16,8 @@
 #define TASK_COMMUNICATION_P   OSTCBP(4)
 #define TASK_POWER_MGMT_P      OSTCBP(5)
 #define TASK_EXPERIMENT_CTRL_P OSTCBP(6)
+#define TASK_DATA_PREP_P       OSTCBP(7)  
+
 // ... add more task pointers as needed
 
 // Task Priorities
@@ -22,6 +28,7 @@
 #define PRIO_POWER_MGMT_NORMAL 5
 #define PRIO_POWER_MGMT_LOW    1 
 #define PRIO_EXPERIMENT_CTRL   6
+#define PRIO_DATA_PREP 7
 // will add more
 
 // Timing Definitions
@@ -35,6 +42,8 @@
 #define BINSEM_COMMS_COMPLETE      OSECBP(4)
 #define BINSEM_EXPERIMENT_WINDOW   OSECBP(5)
 #define BINSEM_EXPERIMENT_COMPLETE OSECBP(6)
+#define BINSEM_DATA_NEEDED         OSECBP(7) 
+#define BINSEM_DATA_READY          OSECBP(8)
 // will add more
 
 // Helper function prototypes
