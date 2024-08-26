@@ -15,8 +15,7 @@ unsigned long MinutesToTicks(unsigned long minutes) {
 
 void TaskSystemInit(void) //Performs start-up and initial system delay before going to regular sys operations
 {
-    // Perform any system initializations here
-    // ...
+    //Check Component status here
 
     OS_Delay(MinutesToTicks(30));
     OSSignalBinSem(BINSEM_INIT_COMPLETE);
