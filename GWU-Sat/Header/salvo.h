@@ -99,7 +99,7 @@ salvolib.h.
 // OSUSE_LIBRARY symbol always requires definition.
 #if !defined(OSUSE_LIBRARY)
 #define OSUSE_LIBRARY                   FALSE
-#endif
+#endif 
 
 // To get here, we have a user wanting to build an app by
 //  linking to libraries. First, verify that user hasn't

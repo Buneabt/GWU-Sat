@@ -1,5 +1,5 @@
 #include "i2c_comm.h"
-#include <p33FJ256GP710.h>  
+#include <p24FJ256GA110.h>  
 
 #define I2C_ADDRESS 0x2A // Define the I2C address of the slave device
 #define FCY 16000000UL   // Define the instruction cycle frequency

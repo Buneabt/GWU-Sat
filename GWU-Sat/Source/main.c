@@ -1,8 +1,11 @@
-#include "../inc/salvo.h"
-#include "../inc/satellite_defs.h"
-//#include "i2c_comm.h"
+#include "salvo.h"
+#include "config.h"
+#include "satellite_defs.h"
+#include "i2c_comm.h"
 #include <p24FJ256GA110.h>
-#include <uart.h>
+
+
+
 
 void TaskStatusCheck(void);
 void TaskCommunication(void);
