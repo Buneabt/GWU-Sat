@@ -1,5 +1,7 @@
 {
     "files.associations": {
-        "i2c_comm.h": "c"
+        "i2c_comm.h": "c",
+        "salvopsh.h": "c",
+        "salvo.h": "c"
     }
 }

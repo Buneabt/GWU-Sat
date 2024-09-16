@@ -1,7 +1,16 @@
-#include "salvo.h"
-#include "satellite_defs.h"
-#include "i2c_comm.h"
-#include <p33FJ256GP710.h> 
+#include "../inc/salvo.h"
+#include "../inc/satellite_defs.h"
+//#include "i2c_comm.h"
+#include <p24FJ256GA110.h>
+#include <uart.h>
+
+void TaskStatusCheck(void);
+void TaskCommunication(void);
+void TaskPowerManagement(void);
+void TaskExperimentControl(void);
+void TaskDataPreparation(void);
+
+
 
 unsigned long SecondsToTicks(unsigned long seconds) {
     return seconds * TICKS_PER_SECOND;
@@ -46,7 +55,7 @@ void TaskStatusCheck(void)
     {
         // Perform system status check
         // Use I2C to communicate with other components if needed
-        uint16_t status = I2C_ReadTelemetry(0x01);  // Example command
+        //uint16_t status = I2C_ReadTelemetry(0x01);  // Example command
         // Process status...
 
         OSSignalBinSem(BINSEM_STATUS_CHECKED);
@@ -65,7 +74,7 @@ void TaskCommunication(void)
         OS_WaitBinSem(BINSEM_OVER_GROUND_STATION, OSNO_TIMEOUT);
         
         //Here we will call i2c to send down our signal
-        performCommunication();
+        //performCommunication();
         
         // After communication, signal that we need new data
         OSSignalBinSem(BINSEM_DATA_NEEDED);
@@ -84,7 +93,7 @@ void TaskDataPreparation(void)
         OS_WaitBinSem(BINSEM_DATA_NEEDED, OSNO_TIMEOUT);
         
         // Prepare data (e.g., collect system data, create CSV)
-        prepareDataForTransmission();
+        //prepareDataForTransmission();
         
         // Signal that data is ready
         OSSignalBinSem(BINSEM_DATA_READY);
@@ -106,21 +115,21 @@ void TaskPowerManagement(void)
     while(1)
     {
         // Check power levels using I2C
-        uint16_t powerLevel = I2C_ReadTelemetry(0x02);  // Example command
+        //uint16_t powerLevel = I2C_ReadTelemetry(0x02);  // Example command
 
         //Change these conditions to reflect more accurately on what will be needed
-        if (powerLevel < LOW_POWER_THRESHOLD && !isLowPower)
-        {
-            OSSetPrio(PRIO_POWER_MGMT_LOW);
-            isLowPower = TRUE;
-            // Enter low power mode
-        }
-        else if (powerLevel >= LOW_POWER_THRESHOLD && isLowPower)
-        {
-            OSSetPrio(originalPriority);
-            isLowPower = FALSE;
+        //if (powerLevel < LOW_POWER_THRESHOLD && !isLowPower)
+        //{
+        //    OSSetPrio(PRIO_POWER_MGMT_LOW);
+        //    isLowPower = TRUE;
+        //    // Enter low power mode
+        //}
+        //else if (powerLevel >= LOW_POWER_THRESHOLD && isLowPower)
+        //{
+        //    OSSetPrio(originalPriority);
+        //    isLowPower = FALSE;
             // Exit low power mode
-        }
+        //}
 
         OS_Delay(isLowPower ? SecondsToTicks(30) : TICKS_PER_MINUTE);
     }
@@ -138,7 +147,7 @@ void TaskExperimentControl(void)
         // Determine which experiment to run
         // Run experiment
         // Use I2C to control experiment hardware if needed
-        I2C_SendCommand(0x03, 0x01);  // Example command
+        //I2C_SendCommand(0x03, 0x01);  // Example command
         OSSignalBinSem(BINSEM_EXPERIMENT_COMPLETE);
     }
 }
@@ -159,7 +168,7 @@ int main(void)
     // Initialize the system clock and other hardware
 
     // Initialize I2C
-    I2C_Init();
+    //I2C_Init();
 
     // Initialize Salvo
     OSInit();
