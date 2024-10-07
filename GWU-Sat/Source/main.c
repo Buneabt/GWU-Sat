@@ -5,8 +5,6 @@
 #include <p24FJ256GA110.h>
 
 
-
-
 void TaskStatusCheck(void);
 void TaskCommunication(void);
 void TaskPowerManagement(void);
