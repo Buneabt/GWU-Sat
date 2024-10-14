@@ -1,0 +1,45 @@
+#include <stdio.h>
+#include <stdbool.h>
+
+// Binary semaphore variables
+bool semaphoreAtoB = false; // For Task B to wait for Task A
+bool semaphoreBtoC = false; // For Task C to wait for Task B
+
+// Function to wait (P operation) for the semaphore
+void waitSemaphore(bool *sem) {
+    while (!(*sem)) {
+        // Busy wait (or block the task in real systems)
+    }
+    *sem = false;  // Acquire the semaphore
+}
+
+// Function to signal (V operation) the semaphore
+void signalSemaphore(bool *sem) {
+    *sem = true;  // Release the semaphore
+}
+
+void taskA() {
+    // Task A code
+    printf("Task A: Producing data\n");
+    signalSemaphore(&semaphoreAtoB);  // Signal that data is ready for Task B
+}
+
+void taskB() {
+    waitSemaphore(&semaphoreAtoB);  // Wait for Task A to complete
+    // Task B code
+    printf("Task B: Processing data\n");
+    signalSemaphore(&semaphoreBtoC);  // Signal that data is ready for Task C
+}
+
+void taskC() {
+    waitSemaphore(&semaphoreBtoC);  // Wait for Task B to complete
+    // Task C code
+    printf("Task C: Sending data\n");
+}
+
+int main() {
+    taskA();  // Start Task A
+    taskB();  // Start Task B
+    taskC();  // Start Task C
+    return 0;
+}

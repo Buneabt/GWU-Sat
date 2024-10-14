@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://www.netbeans.org/ns/project/1">
+    <type>com.microchip.mplab.nbide.embedded.makeproject</type>
+    <configuration>
+        <data xmlns="http://www.netbeans.org/ns/make-project/1">
+            <name>Tut5pro</name>
+            <creation-uuid>1feaf1a5-2408-48fc-a48a-3ff969399c52</creation-uuid>
+            <make-project-type>0</make-project-type>
+            <sourceEncoding>ISO-8859-1</sourceEncoding>
+            <make-dep-projects/>
+            <sourceRootList>
+                <sourceRootElem>../..</sourceRootElem>
+                <sourceRootElem>../../../../../../../../../Inc</sourceRootElem>
+                <sourceRootElem>../../../../../../../../../Src</sourceRootElem>
+                <sourceRootElem>../../../../../../../../../../../../Documents/GitHub/GWU-Sat/GWU-Sat/Header/MCC30</sourceRootElem>
+                <sourceRootElem>../../../../../../../../../../../../Downloads</sourceRootElem>
+            </sourceRootList>
+            <confList>
+                <confElem>
+                    <name>default</name>
+                    <type>2</type>
+                </confElem>
+            </confList>
+            <formatting>
+                <project-formatting-style>false</project-formatting-style>
+            </formatting>
+        </data>
+    </configuration>
+</project>
