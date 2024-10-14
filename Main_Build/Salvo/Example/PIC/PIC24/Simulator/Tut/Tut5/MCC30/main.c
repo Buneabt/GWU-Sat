@@ -53,7 +53,6 @@ void __attribute__((interrupt, auto_psv)) _T1Interrupt(void) {
     IFS0bits.T1IF = 0;  
     OSTimer();          
     
-    // Added: Print system ticks every second for debugging
     static int tick_count = 0;
     if (++tick_count >= TICKS_PER_SECOND) {
         printf("System ticks: %lu\n", OSGetTicks());
@@ -128,32 +127,12 @@ void TaskPowerMGMT(void) {
         printf("TaskPowerMGMT: Checking Power Level \n");
         
         powerLvl = checkBatteryLevel();
-        printf("Current Battery Level: %d%%\n", powerLvl);
         
-        if(powerLvl < 50) {
-            printf("Low power mode activated\n");
-            OS_SetPrio(PRIO_POWER_MGMT_LOW);
-            OS_Yield();
-        }
-        else if (powerLvl > 70) {
-            printf("Normal power mode activated\n");
-            OS_SetPrio(PRIO_POWER_MGMT_NORMAL);
-            OS_Delay(50);
-        }
-        else {
-            // Medium power level
-            printf("Medium power mode\n");
-            OS_Yield();
-        }
+        
+        printf("Current Battery Level: %d%%\n", powerLvl);
+        OS_Delay(50);
     }
 }
-
-
-
-
-
-
-
 
 
 
@@ -214,13 +193,17 @@ int main(void) {
     
     printf("Starting Salvo scheduler\n");
     
-   unsigned long main_counter = 0;
+    unsigned long main_counter = 0;
     while(1) {
         OSSched();
         main_counter++;
-        if (main_counter % 100000 == 0) {
-            printf("Main loop: iteration %lu, system ticks: %lu\n", main_counter, OSGetTicks());
+        if (main_counter % 10000 == 0) {
+            printf("Main loop iteration: %lu\n", main_counter);
+            printf("Mission Time: %s\n", time_elapsed_DDHHMMSSTT());
+            printf("Current system ticks: %lu\n", OSGetTicks());
             ClrWdt();  // Kick the watchdog in the main loop
         }
+        // Add a small delay to prevent tight loops
+        __delay_ms(1);
     }
 }
