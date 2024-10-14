@@ -19,6 +19,7 @@ void OSIdleHook(void)
 
 // UART configuration for debugging output
 void initUART(void) {
+    printf("Initializing UART...\n");
     U1MODEbits.STSEL = 0; // 1 Stop bit
     U1MODEbits.PDSEL = 0; // No Parity, 8 data bits
     U1MODEbits.ABAUD = 0; // Autobaud disabled
@@ -26,7 +27,9 @@ void initUART(void) {
     U1BRG = 25;           // Baud Rate setting for 9600
     U1MODEbits.UARTEN = 1; // Enable UART
     U1STAbits.UTXEN = 1;   // Enable UART Tx
+    printf("UART initialized\n");
     srand((unsigned int)OSGetTicks());  // Seed the random number generator
+    printf("Random number generator seeded\n");
 }
 
 // Function to print a character (used by printf)
@@ -46,22 +49,18 @@ void initTimer1(void) {
     IFS0bits.T1IF = 0;
     IEC0bits.T1IE = 1;
     T1CONbits.TON = 1;
+    printf("Timer1 initialized: PR1=%u, TCKPS=%u\n", PR1, T1CONbits.TCKPS);
 }
 
 // Timer1 Interrupt Service Routine
 void __attribute__((interrupt, auto_psv)) _T1Interrupt(void) {
+    static unsigned long interrupt_count = 0;
     IFS0bits.T1IF = 0;  
-    OSTimer();          
-    
-    static int tick_count = 0;
-    if (++tick_count >= TICKS_PER_SECOND) {
-        printf("System ticks: %lu\n", OSGetTicks());
-        tick_count = 0;
+    OSTimer();
+    interrupt_count++;
+    if (interrupt_count % 100 == 0) {
+        printf("Timer1 interrupt count: %lu\n", interrupt_count);
     }
-}
-
-unsigned long SecondsToTicks(unsigned long seconds) {
-    return seconds * TICKS_PER_SECOND;
 }
 
 // END OF HELPER FUNCTIONS
@@ -81,9 +80,8 @@ void TaskStatusCheck (void) {
     for(;;) {
     //Check component status here using i2c functions I will create
     //if (all components good)
-    // Delay for a period of time
+    //  Delay for a period of time
     printf("TaskStatusCheck: Components All Good, Yielding and Delaying Check for 15 Seconds \n");
-
     OS_Delay(15);
     }
 }
@@ -97,6 +95,7 @@ void TaskDataPrep (void) {
         //Send over data and signal the semaphore
         printf("TaskDataPrepped: Data is ready, alerting TaskComm \n");
         OSSignalBinSem(BINSEM_DATA_READY);
+        OSCreateBinSem(BINSEM_DATA_READY, 0);
         OS_Delay(30);
     }
     
@@ -121,15 +120,11 @@ void TaskCommunication (void) {
     }
 }
 
-void TaskPowerMGMT(void) {
-    int powerLvl;
+void TaskPowerMGMT(void) { 
     for(;;) {
         printf("TaskPowerMGMT: Checking Power Level \n");
         
-        powerLvl = checkBatteryLevel();
-        
-        
-        printf("Current Battery Level: %d%%\n", powerLvl);
+        printf("Current Battery Level: %d%%\n", checkBatteryLevel());
         OS_Delay(50);
     }
 }
@@ -192,18 +187,13 @@ int main(void) {
     OSSetTicks(0);  // Initialize system ticks
     
     printf("Starting Salvo scheduler\n");
+    printf("Entering main loop\n");  // New debug print
     
-    unsigned long main_counter = 0;
     while(1) {
-        OSSched();
-        main_counter++;
-        if (main_counter % 10000 == 0) {
-            printf("Main loop iteration: %lu\n", main_counter);
-            printf("Mission Time: %s\n", time_elapsed_DDHHMMSSTT());
-            printf("Current system ticks: %lu\n", OSGetTicks());
-            ClrWdt();  // Kick the watchdog in the main loop
+    OSSched();
+        if (OSGetTicks() % 5 == 0) {
+           printf("Mission Time: %s\n", time_elapsed_DDHHMMSSTT());
+           ClrWdt();
         }
-        // Add a small delay to prevent tight loops
-        __delay_ms(1);
     }
 }
