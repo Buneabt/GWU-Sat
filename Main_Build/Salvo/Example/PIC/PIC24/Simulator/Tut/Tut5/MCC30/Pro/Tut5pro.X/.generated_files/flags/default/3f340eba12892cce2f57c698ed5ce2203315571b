@@ -1,1 +1,0 @@
- -c -mcpu=$(MP_PROCESSOR_OPTION)        -g -omf=elf -DXPRJ_default=$(CND_CONF)    $(COMPARISON_BUILD)  -I"../../../../../../../../../Src" -O0 -I".." -I"../$(BINDIR)" -I"../../../../../../../../../Inc" -I"." -I"../../../../../../../../../Src/MCC30" -msmart-io=1 -msfr-warn=off    -mdfp="${DFP_DIR}/xc16"/Users/bogdanbunea/Desktop/Pumpkin/Salvo/Src/salvomsg2.c
