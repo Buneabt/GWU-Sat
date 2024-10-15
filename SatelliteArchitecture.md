@@ -35,7 +35,7 @@ The tasks below are used to conduct critical OPS
   - `TaskExp`
 
 ## SYSTEMS THINKING
-- System Clock of 100 milliseconds
+- System Clock of 1 second
 - Orbit Period of 93 minutes
 - Orbit Lifespan TBR
 - OS_Delay() used to control many timings
