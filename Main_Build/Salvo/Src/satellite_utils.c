@@ -15,26 +15,26 @@ int checkBatteryLevel(void) {
 }
 
 const char* time_elapsed_DDHHMMSSTT(void) {
-    static char str[48];  // Increased size for debug info
+    static char str[16];  // DD:HH:MM:SS\0
     OStypeTick ticks;
     unsigned long long sec;
     int dd, hh, mm, ss;
     
     ticks = OSGetTicks();
-    sec = ticks;  // Since each tick is now a second
+    sec = (unsigned long long)ticks;  // Each tick is a second
     
-    dd = sec / SEC_PER_DAY;
+    dd = (int)(sec / SEC_PER_DAY);
     sec %= SEC_PER_DAY;
     
-    hh = sec / SEC_PER_HOUR;
+    hh = (int)(sec / SEC_PER_HOUR);
     sec %= SEC_PER_HOUR;
     
-    mm = sec / SEC_PER_MIN;
-    ss = sec % SEC_PER_MIN;
+    mm = (int)(sec / SEC_PER_MIN);
+    ss = (int)(sec % SEC_PER_MIN);
     
     dd %= 100;  // Ensure days don't exceed two digits
     
-    sprintf(str, "%02d:%02d:%02d:%02d (Ticks: %lu)", dd, hh, mm, ss, ticks);
+    snprintf(str, sizeof(str), "%02d:%02d:%02d:%02d", dd, hh, mm, ss);
     
     return str;
 }
