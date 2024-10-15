@@ -3,6 +3,8 @@
 #include "satellite_defs.h"
 #include "satellite_utils.h"
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <xc.h>
 
 
@@ -86,22 +88,40 @@ void TaskStatusCheck (void) {
     }
 }
 
-void TaskDataPrep (void) {
+void TaskDataPrep(void) {
+    char callsign[] = "KQ4NPQ"; // Bogdan's FCC Callsign
+    char eom[] = "<EOM>"; // Signifies the end of the message
+    char filename[] = "sat_data.csv";
+
     for(;;) {
-        //get component data and formulate
+        FILE *fp;
+        // Get the current mission time
+        const char* mission_time = time_elapsed_DDHHMMSSTT();
+        printf("Debug - Current mission time: %s\n", mission_time);
         
-        //Make some dummy data here and practice sending it over to the comms task
+        fp = fopen(filename, "a"); // Open in append mode
+        if (fp == NULL) {
+            printf("Error opening file %s for appending\n", filename);
+            OS_Delay(30);
+            continue;
+        }
         
-        //Send over data and signal the semaphore
-        printf("TaskDataPrepped: Data is ready, alerting TaskComm \n");
+        // Write to file
+        int result = fprintf(fp, "%s,%s,%s\n", callsign, mission_time, eom);
+        if (result < 0) {
+            printf("Error writing to file %s. Error code: %d\n", filename, result);
+        } else {
+            printf("Data appended to CSV: %s,%s,%s\n", callsign, mission_time, eom);
+        }
+        
+        fclose(fp);
+        
+        printf("TaskDataPrep: Data processing complete at %s\n", mission_time);
         OSSignalBinSem(BINSEM_DATA_READY);
-        OSCreateBinSem(BINSEM_DATA_READY, 0);
         OS_Delay(30);
     }
-    
-    
-    
 }
+
 
 
 void TaskCommunication (void) {
@@ -115,7 +135,7 @@ void TaskCommunication (void) {
     
     //performCommunication();
     
-    
+    OSSignalBinSem(BINSEM_DATA_READY);
     OS_Delay(35); //Seconds
     }
 }
@@ -170,6 +190,33 @@ void TaskStartSystem(void) {
 int main(void) {
     initUART();
     printf("\n\n--- Program Start ---\n");
+    
+    // CSV file creation
+    FILE *fp;
+    char filename[] = "sat_data.csv";
+    
+    // Try to open the file in read mode to check if it exists
+    fp = fopen(filename, "r");
+    if (fp == NULL) {
+        // File doesn't exist, create it and write headers
+        fp = fopen(filename, "w");
+        if (fp == NULL) {
+            printf("Error creating datafile %s\n", filename);
+        } else {
+            fprintf(fp, "Callsign,TimeStamp,EndOfMessage\n");
+            printf("CSV file %s created with headers\n", filename);
+            fclose(fp);
+        }
+    } else {
+        // File already exists, close it without modifying
+        printf("CSV file %s already exists\n", filename);
+        fclose(fp);
+    }
+    
+    //Close the csv file with the headers created only once.
+    
+    
+    
     
     OSInit();
     printf("Salvo initialized\n");
