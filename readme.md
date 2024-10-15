@@ -1,4 +1,4 @@
-# GWU-Sat
+# GWU-Sat Version 0.01
 
 This is the beginning of the codebase for GWU-Sat which aims to send experimental thruster units into LEO.
 
