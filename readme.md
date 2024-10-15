@@ -12,10 +12,12 @@ Unless Stated all programming files will be inside the **SAT** Folder
 
 **Priority**
 - Build inside compiler
-    - [ ] Try to build main inside of vscode, should work since non of the tasks actually do anything all I need to salvo.h and it should build.
+    - [x] Run Simulator
+    - [x] Include introductory tasks like StartSysten and SystemInit
+    - [x] Create all basic system tasks
 
 - Build example file onto PPM D
-    - [ ] Get to compile, must use pick-it 3
+    - [ ] Get to compile and push, must use pick-it 3
 
 ---------------------------------------------
 
@@ -28,8 +30,9 @@ Unless Stated all programming files will be inside the **SAT** Folder
     - [ ] Send Pings to each individual component
     - [ ] Build correct i2C constructor for each component if they differ
     - [x] Begin a timer
+    - [ ] Conduct Long haul test of each version (30 minutes using significantly reduced OS_Delay() times) 
 - Thrusters
-    - [ ] Inside Tasks.c and Tasks.h make experiments 1 through 6, right now I only have a general ***void TaskExecuteExperiment(void)*** function
+    - [ ] Inside Main.c and satellite_defs.h make experiments 1 through 6, right now I only have a general ***void TaskExecuteExperiment(void)*** function
     - [ ] Need to somehow translate code into actions since this is all devolped in house (No pre-defined functions like we would usually have)
 
 
