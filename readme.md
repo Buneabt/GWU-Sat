@@ -17,7 +17,8 @@ Unless Stated all programming files will be inside the **SAT** Folder
     - [x] Create all basic system tasks
 
 - Build example file onto PPM D
-    - [ ] Get to compile and push, must use pick-it 3
+    - [x] Get to compile and push, must use pick-it 3
+    - [ ] Get serial output from Pumpkin Dev Board
 
 ---------------------------------------------
 
