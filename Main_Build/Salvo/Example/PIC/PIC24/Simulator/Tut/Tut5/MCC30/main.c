@@ -7,9 +7,23 @@
 #include <string.h>
 #include <xc.h>
 
+#include <digipeater.c>
+
+
 
 void initUART(void);
 void initTimer1(void);
+
+int __attribute__((__section__(".libc.write"))) write(int handle, void *buffer, unsigned int len) {
+    int i;
+    for (i = 0; i < len; i++) {
+        while (U1STAbits.UTXBF);  // Wait while TX buffer full
+        U1TXREG = *(char*)buffer++;
+    }
+    return len;
+}
+
+
 
 void OSIdleHook(void)
 {
@@ -21,17 +35,21 @@ void OSIdleHook(void)
 
 // UART configuration for debugging output
 void initUART(void) {
-    printf("Initializing UART...\n");
-    U1MODEbits.STSEL = 0; // 1 Stop bit
-    U1MODEbits.PDSEL = 0; // No Parity, 8 data bits
-    U1MODEbits.ABAUD = 0; // Autobaud disabled
-    U1MODEbits.BRGH = 0;  // Low Speed mode
-    U1BRG = 25;           // Baud Rate setting for 9600
-    U1MODEbits.UARTEN = 1; // Enable UART
-    U1STAbits.UTXEN = 1;   // Enable UART Tx
-    printf("UART initialized\n");
-    srand((unsigned int)OSGetTicks());  // Seed the random number generator
-    printf("Random number generator seeded\n");
+    // Disable UART before configuration
+    U1MODEbits.UARTEN = 0;
+    
+    // Configure UART1
+    U1MODEbits.STSEL = 0;    // 1 Stop bit
+    U1MODEbits.PDSEL = 0;    // No Parity, 8 data bits
+    U1MODEbits.ABAUD = 0;    // Auto-Baud disabled
+    U1MODEbits.BRGH = 0;     // Standard Speed mode
+    
+    // Set Baud Rate to 9600
+    U1BRG = ((FCY/9600)/16) - 1;  // Calculate proper BRG value
+    
+    // Enable UART1
+    U1MODEbits.UARTEN = 1;   // Enable UART
+    U1STAbits.UTXEN = 1;     // Enable TX
 }
 
 // Function to print a character (used by printf)
@@ -68,15 +86,6 @@ void __attribute__((interrupt, auto_psv)) _T1Interrupt(void) {
 // END OF HELPER FUNCTIONS
 
 // MAIN PROJECT TASKS 
-void TaskRepeat (void) {
-    static int counter = 0;
-    for(;;) {
-        counter++;
-        printf("TaskRepeat: Running (iteration %d)\n", counter);
-        printf("TaskRepeat: Repeating and Delaying for 10 seconds\n");
-        OS_Delay(10);
-    }
-}
 
 void TaskStatusCheck (void) {
     for(;;) {
@@ -123,23 +132,6 @@ void TaskDataPrep(void) {
 }
 
 
-
-void TaskCommunication (void) {
-    for(;;) {
-    //Check component status here using i2c functions I will create
-    //if (all components good)
-    // Delay for a period of time
-    printf("TaskCommunication: Waiting For Data \n");
-    OS_WaitBinSem(BINSEM_DATA_READY, OSNO_TIMEOUT);
-    printf("TaskCommunication: Data Received Sending \n");
-    
-    //performCommunication();
-    
-    OSSignalBinSem(BINSEM_DATA_READY);
-    OS_Delay(35); //Seconds
-    }
-}
-
 void TaskPowerMGMT(void) { 
     for(;;) {
         printf("TaskPowerMGMT: Checking Power Level \n");
@@ -147,6 +139,16 @@ void TaskPowerMGMT(void) {
         printf("Current Battery Level: %d%%\n", checkBatteryLevel());
         OS_Delay(50);
     }
+}
+
+void TaskSystemShutDown(void) {
+    for(;;) {
+        OS_WaitBinSem(BINSEM_SYS_SHUT_DOWN, OSNO_TIMEOUT);
+        //Stay Stuck here an infinite loop, kick the watchdog so it never times out
+        //I'll put a proper shutdown here now but for the time being this should put our sat into a "dead" state
+        ClrWdt();
+    }
+    
 }
 
 
@@ -173,12 +175,15 @@ void TaskStartSystem(void) {
     printf("TaskStartSystem: BINSEM_INIT_COMPLETE received\n");
     
     OSCreateBinSem(BINSEM_DATA_READY, 0);
+    OSCreateBinSem(BINSEM_SYS_SHUT_DOWN);
     
-    OSCreateTask(TaskRepeat, TASK_REPEAT_P, PRIO_REPEAT);
     OSCreateTask(TaskStatusCheck, TASK_STATUS_CHECK_P, PRIO_STATUS_CHECK);
     OSCreateTask(TaskCommunication, TASK_COMMUNICATION_P, PRIO_COMMUNICATION);
     OSCreateTask(TaskPowerMGMT, TASK_POWER_MGMT_P, PRIO_POWER_MGMT_NORMAL);
     OSCreateTask(TaskDataPrep, TASK_DATA_PREP_P, PRIO_DATA_PREP);
+    OSCreateTask(TaskSystemShutDown, TASK_SYSTEM_SHUT_DOWN, PRIO_SYSTEM_SHUT_DOWN)
+    
+    initDigipeater(); //This creates our digipeater task
     
 
     printf("TaskStartSystem: System fully initialized\n");
@@ -188,7 +193,7 @@ void TaskStartSystem(void) {
 // END OF PROJECT TASKS
 
 int main(void) {
-    initUART();
+    initUART(); 
     printf("\n\n--- Program Start ---\n");
     
     // CSV file creation
