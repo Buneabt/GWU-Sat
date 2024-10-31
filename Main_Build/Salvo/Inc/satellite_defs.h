@@ -17,20 +17,27 @@
 #define TASK_POWER_MGMT_P      OSTCBP(5)
 #define TASK_EXPERIMENT_CTRL_P OSTCBP(6)
 #define TASK_DATA_PREP_P       OSTCBP(7)  
-#define TASK_REPEAT_P          OSTCBP(8) //Remove once Done
+#define TASK_COMM_READ_P       OSTCBP(8)
+
+#define TASK_SYSTEM_SHUT_DOWN  OSTCBP(9)
+
 
 // ... add more task pointers as needed
 
 // Task Priorities
-#define PRIO_SYSTEM_INIT       0
-#define PRIO_START_SYSTEM      2
-#define PRIO_STATUS_CHECK      3
-#define PRIO_COMMUNICATION     4
-#define PRIO_POWER_MGMT_NORMAL 5
-#define PRIO_POWER_MGMT_LOW    1 
-#define PRIO_EXPERIMENT_CTRL   6
-#define PRIO_DATA_PREP 7
-#define PRIO_REPEAT 4 //Remove once testing is done
+#define PRIO_SYSTEM_INIT       0 //This will always be 0 and 1
+#define PRIO_START_SYSTEM      1
+
+#define PRIO_SYSTEM_SHUT_DOWN 3
+
+#define PRIO_STATUS_CHECK      4
+#define PRIO_COMMUNICATION     5
+#define PRIO_POWER_MGMT_NORMAL 6
+#define PRIO_POWER_MGMT_LOW    3 
+#define PRIO_EXPERIMENT_CTRL   7
+#define PRIO_DATA_PREP 8
+
+#define PRIO_COMM_READ 2; //Have this be the same level as low power level because receiving power is passive.
 // will add more
 
 // Timing Definitions
@@ -46,6 +53,7 @@
 #define BINSEM_EXPERIMENT_COMPLETE OSECBP(6)
 #define BINSEM_DATA_NEEDED         OSECBP(7) 
 #define BINSEM_DATA_READY          OSECBP(8)
+#define BINSEM_SYS_SHUT_DOWN       OSECBP(9)
 // will add more
 
 // Helper function prototypes

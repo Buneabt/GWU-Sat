@@ -9,8 +9,8 @@
 #define OSTIMER_PRESCALAR       1
 
 // Task and event configuration
-#define OSTASKS                 8    // Total number of tasks in the system
-#define OSEVENTS                8    
+#define OSTASKS                 20    // Total number of tasks in the system
+#define OSEVENTS                20   
 #define OSEVENT_FLAGS           0    
 #define OSMESSAGE_QUEUES        0    
 

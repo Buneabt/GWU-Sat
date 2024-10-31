@@ -3,10 +3,11 @@
 
 #include <stdlib.h>
 #include <time.h>
+#include <stdio.h>
+#include "satellite_defs.h"  // Make sure this includes your TICKS_PER_SECOND definition
 
 // Function prototypes
 int checkBatteryLevel(void);
-
-// Add other utility function prototypes here in the future
+const char* time_elapsed_DDHHMMSSTT(void);
 
 #endif // SATELLITE_UTILS_H
