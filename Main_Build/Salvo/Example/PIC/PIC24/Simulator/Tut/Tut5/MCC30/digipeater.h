@@ -10,60 +10,53 @@
 #define DIGIPEATER_H
 
 #include <salvo.h>
+#include <stdbool.h>
 #include <stdint.h>
+#include "satellite_defs.h"
 
-// Security definitions
-#define SECURITY_KEY_LENGTH 32      // Length of security key in bytes (256-bit)
+// Constants
+#define MAX_STORED_MESSAGES 10
+#define SECURITY_KEY_LENGTH 32
+#define MAX_MESSAGE_AGE 3600  // 1 hour in ticks
 
-// Maximum time to store messages before they expire
-#define MAX_MESSAGE_AGE (30 * TICKS_PER_MINUTE)  // 30 minutes in system ticks
-
-// Maximum number of messages that can be stored for digipeating
-#define MAX_STORED_MESSAGES 10      // Buffer size for stored messages
-
-// Command types that can be received
-typedef enum {
-    CMD_PING = 0x01,               // Ground station visibility check
-    CMD_SHUTDOWN = 0x02,           // Emergency shutdown command
-    CMD_START_EXPERIMENT = 0x03,   // Authorize experiment execution
-    CMD_DIGIPEAT = 0x04,          // Message to be repeated
-    CMD_CLEAR_BUFFER = 0x05,      // Clear digipeater buffer
-    CMD_STATUS_REQUEST = 0x06     // Request satellite status
-} CommandType;
-
-// Structure for secure command verification
+// Type definitions
 typedef struct {
-    uint8_t iv[16];                // Initialization vector for encryption
-    uint8_t encryptedData[80];     // Encrypted command data
-    uint8_t hmac[32];              // Message authentication code
-} SecureCommand;
-
-// Structure for processed radio messages
-typedef struct {
-    uint8_t securityKey[SECURITY_KEY_LENGTH];  // Security key for verification
-    CommandType cmd;                           // Command type
-    uint8_t data[64];                         // Command payload
-    uint8_t length;                           // Length of payload
-    uint32_t timestamp;                       // Time message was received
-    uint8_t priority;                         // Message priority level
-    uint8_t retries;                         // Number of transmission attempts
+    uint8_t cmd;
+    uint32_t timestamp;
+    uint8_t data[64];
 } RadioMessage;
 
-// Security status enumeration
+typedef struct {
+    uint8_t data[128];
+    uint8_t length;
+} SecureCommand;
+
 typedef enum {
-    SEC_SUCCESS = 0,           // Security verification passed
-    SEC_INVALID_KEY,           // Invalid security key
-    SEC_CORRUPTED_DATA,        // Data corruption detected
-    SEC_INVALID_HMAC          // Invalid message authentication code
+    SEC_SUCCESS,
+    SEC_INVALID_KEY,
+    SEC_FAILED_DECRYPT
 } SecurityStatus;
 
-// Function prototypes
-void initDigipeater(void);                    // Initialize digipeater subsystem
-void TaskCommRead(void);                      // High-priority receive task
-SecurityStatus verifyAndDecryptCommand(
-    const SecureCommand* cmd,                 // Verify and decrypt incoming commands
-    uint8_t* decryptedData
-);
-void logSecurityEvent(SecurityStatus status);  // Log security-related events
+// Command definitions
+#define CMD_PING              0x01
+#define CMD_SHUTDOWN          0x02
+#define CMD_START_EXPERIMENT  0x03
+#define CMD_DIGIPEAT          0x04
+#define CMD_CLEAR_BUFFER      0x05
+#define CMD_STATUS_REQUEST    0x06
+
+// Function declarations
+void initDigipeater(void);
+void TaskCommRead(void);
+void TaskCommunication(void);
+
+// Hardware interface functions
+bool receiveMessage(SecureCommand* cmd);
+bool transmitMessage(const RadioMessage* msg);
+void performEmergencyShutdown(void);
+
+// Security functions
+SecurityStatus verifyAndDecryptCommand(const SecureCommand* cmd, uint8_t* decryptedData);
+void logSecurityEvent(SecurityStatus status);
 
 #endif // DIGIPEATER_H

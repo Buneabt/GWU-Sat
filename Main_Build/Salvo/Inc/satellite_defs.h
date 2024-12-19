@@ -7,6 +7,9 @@
 // Battery Definitions
 #define LOW_POWER_THRESHOLD 15000
 
+#define FOSC    7372800ULL  // System clock frequency (adjust this to match your config)
+#define FCY     (FOSC/2)    // Instruction cycle frequency
+
 
 // Task Control Block Pointers
 

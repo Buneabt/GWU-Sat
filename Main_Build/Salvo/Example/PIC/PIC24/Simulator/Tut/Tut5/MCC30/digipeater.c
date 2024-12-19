@@ -1,7 +1,7 @@
 #include "digipeater.h"
-#include "secure_comms.h"
 #include <string.h>
 #include <stdio.h>
+#include "satellite_defs.h"
 
 // Static buffer for storing messages to be digipeated
 static RadioMessage messageBuffer[MAX_STORED_MESSAGES];
@@ -13,23 +13,10 @@ static const uint8_t VALID_SECURITY_KEY[SECURITY_KEY_LENGTH] = {
     0x00  // Will be programmed separately via secure bootloader
 };
 
-// Initialize the digipeater subsystem
-void initDigipeater(void) {
-    // Clear message buffer
-    memset(messageBuffer, 0, sizeof(messageBuffer));
-    messageCount = 0;
-    
-    // Create the high-priority receive task
-    OSCreateTask(TaskCommRead, TASK_COMM_READ_P, PRIO_COMM_READ);
-    
-    printf("Digipeater initialized\n");
-}
-
-// Check if a stored message is still valid
+// Function to check if a stored message is still valid
 static bool isMessageValid(const RadioMessage* msg) {
     uint32_t currentTime = OSGetTicks();
     uint32_t messageAge = currentTime - msg->timestamp;
-    
     return (messageAge < MAX_MESSAGE_AGE);
 }
 
@@ -56,6 +43,51 @@ static void storeMessage(RadioMessage* msg) {
     }
 }
 
+// Hardware interface implementations
+bool receiveMessage(SecureCommand* cmd) {
+    // TODO: Implement actual hardware reception
+    // Temporary implementation returning false
+    // This should be replaced with actual radio reception code
+    return false;
+}
+
+bool transmitMessage(const RadioMessage* msg) {
+    // TODO: Implement actual hardware transmission
+    // Temporary implementation returning false
+    // This should be replaced with actual radio transmission code
+    return false;
+}
+
+void performEmergencyShutdown(void) {
+    // TODO: Implement actual shutdown procedure
+    printf("Emergency shutdown initiated\n");
+    OSSignalBinSem(BINSEM_SYS_SHUT_DOWN);
+}
+
+SecurityStatus verifyAndDecryptCommand(const SecureCommand* cmd, uint8_t* decryptedData) {
+    // TODO: Implement actual security verification and decryption
+    // This is a temporary implementation that should be replaced with proper security checks
+    if (cmd && decryptedData) {
+        memcpy(decryptedData, cmd->data, cmd->length);
+        return SEC_SUCCESS;
+    }
+    return SEC_FAILED_DECRYPT;
+}
+
+void logSecurityEvent(SecurityStatus status) {
+    // TODO: Implement actual security logging
+    printf("Security event logged: %d\n", status);
+}
+
+// Initialize the digipeater subsystem
+void initDigipeater(void) {
+    // Clear message buffer
+    memset(messageBuffer, 0, sizeof(messageBuffer));
+    messageCount = 0;
+    
+    printf("Digipeater initialized\n");
+}
+
 // Main receive task
 void TaskCommRead(void) {
     SecureCommand rxCmd;
@@ -64,7 +96,7 @@ void TaskCommRead(void) {
     
     for(;;) {
         // Check for incoming messages
-        if (receiveMessage(&rxCmd)) {  // Hardware-specific function
+        if (receiveMessage(&rxCmd)) {
             // Verify and decrypt the command
             SecurityStatus status = verifyAndDecryptCommand(&rxCmd, decryptedData);
             
@@ -141,8 +173,8 @@ void TaskCommunication(void) {
     static uint8_t currentMsg = 0;
     
     for(;;) {
-        // Wait for data and ground station visibility
-        OS_WaitBinSem(BINSEM_DATA_READY && BINSEM_OVER_GROUND_STATION, OSNO_TIMEOUT);
+        // Wait for data
+        OS_WaitBinSem(BINSEM_DATA_READY, OSNO_TIMEOUT);
         
         // Process stored digipeater messages first
         while (messageCount > 0 && currentMsg < messageCount) {
@@ -150,10 +182,10 @@ void TaskCommunication(void) {
             
             if (isMessageValid(msg)) {
                 // Attempt to transmit message
-                if (transmitMessage(msg)) {  // Hardware-specific function
+                if (transmitMessage(msg)) {
                     printf("Digipeated message %d\n", currentMsg);
                     
-                    // Remove successfully transmitted message
+                    // Remove successfully transmitted message by shifting remaining messages
                     if (currentMsg < messageCount - 1) {
                         memmove(&messageBuffer[currentMsg], 
                                &messageBuffer[currentMsg + 1], 
@@ -161,8 +193,7 @@ void TaskCommunication(void) {
                     }
                     messageCount--;
                 } else {
-                    // Transmission failed, try next message
-                    currentMsg++;
+                    currentMsg++; // Try next message if transmission failed
                 }
             } else {
                 // Remove expired message
@@ -181,9 +212,9 @@ void TaskCommunication(void) {
         }
         
         // Handle regular satellite data transmission
-        if (OSPendingBinSem(BINSEM_DATA_READY)) {
-            // Your existing communication code here
+        if ((BINSEM_DATA_READY)) {
             printf("Transmitting satellite data\n");
+            // TODO: Implement actual data transmission
         }
         
         OS_Delay(35);  // Delay between transmission attempts
