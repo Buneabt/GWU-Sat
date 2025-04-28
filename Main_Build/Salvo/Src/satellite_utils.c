@@ -10,7 +10,7 @@
 #define MIN_PER_DAY   (24ULL * 60ULL)
 
 // Battery simulation variables
-static int g_batteryLevel = 100;
+static int g_batteryLevel = 55;
 static unsigned long lastBatteryUpdate = 0;
 static const unsigned long BATTERY_UPDATE_INTERVAL = 10 * TICKS_PER_SECOND;
 
@@ -50,16 +50,31 @@ void setBatteryLevel(int level) {
 
 // Battery simulator
 int checkBatteryLevel(void) {
-    // Update battery level every 10 seconds
     unsigned long currentTicks = OSGetTicks();
+    unsigned long elapsedTicks = currentTicks - lastBatteryUpdate;
     
-    if (currentTicks - lastBatteryUpdate >= BATTERY_UPDATE_INTERVAL) {
-        // Decrease battery by 1%
-        if (g_batteryLevel > 0) {
-            g_batteryLevel--;
-        }
+    // Only update if some time has passed
+    if (elapsedTicks > 0) {
+        // Calculate decrease - make it 5% per second for faster testing
+        int decreaseAmount = 5 * (elapsedTicks / TICKS_PER_SECOND);
         
-        lastBatteryUpdate = currentTicks;
+        if (decreaseAmount > 0) {
+            if (decreaseAmount > g_batteryLevel) {
+                decreaseAmount = g_batteryLevel; // Don't go below 0
+            }
+            
+            // Decrease the battery level
+            g_batteryLevel -= decreaseAmount;
+            
+            // Print debug info
+            if (decreaseAmount > 0) {
+                printf("Battery decreased by %d%% to %d%% (elapsed time: %lu ticks)\n", 
+                       decreaseAmount, g_batteryLevel, elapsedTicks);
+            }
+            
+            // Update the last update time
+            lastBatteryUpdate = currentTicks;
+        }
     }
     
     return g_batteryLevel;

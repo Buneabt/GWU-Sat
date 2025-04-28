@@ -137,48 +137,39 @@ void TaskStatusCheck (void) {
     //if (all components good)
     //  Delay for a period of time
     printf("TaskStatusCheck: Components All Good, Yielding and Delaying Check for 15 Seconds \n");
+    OSIdleHook();
     OS_Delay(15);
     }
 }
 
-void TaskDataPrep(void) {
-//    char callsign[] = "KQ4NPQ"; // Bogdan's FCC Callsign
-//    char eom[] = "<EOM>"; // Signifies the end of the message
-//    char filename[] = "sat_data.csv";
-//
-//    for(;;) {
-//        FILE *fp;
-//        // Get the current mission time
-//        const char* mission_time = time_elapsed_DDHHMMSSTT();
-//        printf("Debug - Current mission time: %s\n", mission_time);
-//        
-//        fp = fopen(filename, "a"); // Open in append mode
-//        if (fp == NULL) {
-//            printf("Error opening file %s for appending\n", filename);
-//            OS_Delay(30);
-//            continue;
-//        }
-//        
-//        // Write to file
-//        int result = fprintf(fp, "%s,%s,%s\n", callsign, mission_time, eom);
-//        if (result < 0) {
-//            printf("Error writing to file %s. Error code: %d\n", filename, result);
-//        } else {
-//            printf("Data appended to CSV: %s,%s,%s\n", callsign, mission_time, eom);
-//        }
-//        
-//        fclose(fp);
-//        
-//        printf("TaskDataPrep: Data processing complete at %s\n", mission_time);
-//        OSSignalBinSem(BINSEM_DATA_READY);
+void TaskDataPrep(void) { //In memory solution not real
+    static char dataBuffer[1024] = "Callsign,TimeStamp,EndOfMessage\n";
+    static int bufferPos = 37; // Length of header
+    
+    for(;;) {
+        // Get the current mission time
+        const char* mission_time = time_elapsed_DDHHMMSSTT();
+        printf("TaskDataPrep: Processing data at %s\n", mission_time);
+        
+        // Instead of writing to file, store in memory buffer
+        // Add code here to add data to buffer if needed
+        
+        // Signal that data is ready
+        printf("TaskDataPrep: Data ready\n");
+        OSSignalBinSem(BINSEM_DATA_READY);
+        
+        // Important: Kick watchdog before delay
+        OSIdleHook();
         OS_Delay(30);
-    //}
+    }
 }
 
 
 void TaskPowerMGMT(void) { 
     int inLowPowerMode = 0;
     int lowPowerHoldTime = 0;
+    
+    printf("TaskPowerMGMT: Starting with inLowPowerMode = %d\n", inLowPowerMode);
     
     for(;;) {
         // Check the battery level
@@ -188,38 +179,49 @@ void TaskPowerMGMT(void) {
         printf("Current Battery Level: %d%%\n", batteryLevel);
         
         // Check if we need to enter low power mode
-        if (batteryLevel < 50 && !inLowPowerMode) {
-            printf("TaskPowerMGMT: Entering low power mode!\n");
+        if (batteryLevel <= 50 && !inLowPowerMode) {
+            printf("\n*** TaskPowerMGMT: ENTERING LOW POWER MODE! ***\n\n");
             inLowPowerMode = 1;
             lowPowerHoldTime = 0;
+            
+            // Change priority of this task to higher priority (lower number)
+            // Since this function only affects the current task
+            OSSetPrio(PRIO_POWER_MGMT_LOW);
         }
         
         // Handle low power mode
-        if (inLowPowerMode) {
+        if (inLowPowerMode == 1) {
             // Stay in low power mode until battery is sufficiently recharged
             if (batteryLevel < 75) {
                 printf("TaskPowerMGMT: In low power mode. Holding for recharge...\n");
                 
                 // Every 10 seconds in low power mode increases battery by 1%
-                lowPowerHoldTime += 50; // We're delaying 50 ticks at a time
+                lowPowerHoldTime += 10; 
                 if (lowPowerHoldTime >= 10 * TICKS_PER_SECOND) {
                     // Increase battery level
-                    setBatteryLevel(batteryLevel + 1);
+                    int newLevel = batteryLevel + 1;
+                    setBatteryLevel(newLevel);
                     lowPowerHoldTime = 0; // Reset counter
-                    printf("TaskPowerMGMT: Battery recharged to %d%%\n", batteryLevel + 1);
+                    printf("TaskPowerMGMT: Battery recharged to %d%%\n", newLevel);
                 }
                 
                 // Kick the watchdog to prevent reset while in low power mode
                 ClrWdt();
             } else {
                 // Battery is sufficiently recharged, exit low power mode
-                printf("TaskPowerMGMT: Exiting low power mode. Battery level: %d%%\n", batteryLevel);
+                printf("\n*** TaskPowerMGMT: EXITING LOW POWER MODE. Battery level: %d%% ***\n\n", batteryLevel);
                 inLowPowerMode = 0;
+                
+                // Restore original priority
+                OSSetPrio(PRIO_POWER_MGMT_NORMAL);
             }
+        } else {
+            // Not in low power mode
+            printf("TaskPowerMGMT: Normal operation mode, battery level: %d%%\n", batteryLevel);
         }
         
-        // Delay for 50 ticks before next check
-        OS_Delay(50);
+        // Delay for 10 ticks before next check
+        OS_Delay(10);
     }
 }
 
@@ -301,8 +303,6 @@ int main(void) {
     //Close the csv file with the headers created only once.
     
     
-    
-    
     OSInit();
     printf("Salvo initialized\n");
     
@@ -321,11 +321,17 @@ int main(void) {
     printf("Starting Salvo scheduler\n");
     printf("Entering main loop\n");  // New debug print
     
+    static unsigned long lastPrintTime = 0; // Add this at the top of main.c or just before your main loop
+
     while(1) {
-    OSSched();
-        if (OSGetTicks() % 50 == 0) {
-           printf("Mission Time: %s\n", time_elapsed_DDHHMMSSTT());
-           ClrWdt();
+        OSSched();
+
+        // Only print mission time once every 50 ticks
+        unsigned long currentTicks = OSGetTicks();
+        if ((currentTicks % 50 == 0) && (currentTicks != lastPrintTime)) {
+            printf("Mission Time: %s\n", time_elapsed_DDHHMMSSTT());
+            lastPrintTime = currentTicks;
+            OSIdleHook();
         }
     }
 }
