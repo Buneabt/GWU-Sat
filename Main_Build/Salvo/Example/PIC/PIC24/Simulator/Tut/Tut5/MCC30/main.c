@@ -52,7 +52,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "digipeater.h"
 
 
 
@@ -223,12 +222,10 @@ void TaskStartSystem(void) {
     OSCreateBinSem(BINSEM_SYS_SHUT_DOWN, 0);  // Add the initial value parameter
     
     OSCreateTask(TaskStatusCheck, TASK_STATUS_CHECK_P, PRIO_STATUS_CHECK);
-    OSCreateTask(TaskCommunication, TASK_COMMUNICATION_P, PRIO_COMMUNICATION);
     OSCreateTask(TaskPowerMGMT, TASK_POWER_MGMT_P, PRIO_POWER_MGMT_NORMAL);
     OSCreateTask(TaskDataPrep, TASK_DATA_PREP_P, PRIO_DATA_PREP);
     OSCreateTask(TaskSystemShutDown, TASK_SYSTEM_SHUT_DOWN, PRIO_SYSTEM_SHUT_DOWN);
     
-    initDigipeater(); //This creates our digipeater task
     
 
     printf("TaskStartSystem: System fully initialized\n");
