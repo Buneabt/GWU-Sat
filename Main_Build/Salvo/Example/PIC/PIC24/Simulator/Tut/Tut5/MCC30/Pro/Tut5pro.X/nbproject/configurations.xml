@@ -31,7 +31,6 @@
       <itemPath>../../../../../../../../../Inc/salvowar.h</itemPath>
       <itemPath>../../../../../../../../../Inc/satellite_defs.h</itemPath>
       <itemPath>../../../../../../../../../Inc/satellite_utils.h</itemPath>
-      <itemPath>../../digipeater.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -116,7 +115,6 @@
       <itemPath>../../../../../../../../../Src/MCC30/salvohook_wdt.c</itemPath>
       <itemPath>../../../../../../../../../Src/MCC30/salvohook_wdt_MCC30_clrwdt.c</itemPath>
       <itemPath>../../../../../../../../../Src/satellite_utils.c</itemPath>
-      <itemPath>../../digipeater.c</itemPath>
     </logicalFolder>
   </logicalFolder>
   <sourceRootList>
@@ -134,7 +132,7 @@
         <targetDevice>dsPIC33FJ256GP710</targetDevice>
         <targetHeader></targetHeader>
         <targetPluginBoard></targetPluginBoard>
-        <platformTool>PICkit3PlatformTool</platformTool>
+        <platformTool>noID</platformTool>
         <languageToolchain>XC16</languageToolchain>
         <languageToolchainVersion>2.10</languageToolchainVersion>
         <platform>4</platform>
