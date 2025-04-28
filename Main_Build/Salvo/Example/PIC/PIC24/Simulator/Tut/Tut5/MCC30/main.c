@@ -142,45 +142,83 @@ void TaskStatusCheck (void) {
 }
 
 void TaskDataPrep(void) {
-    char callsign[] = "KQ4NPQ"; // Bogdan's FCC Callsign
-    char eom[] = "<EOM>"; // Signifies the end of the message
-    char filename[] = "sat_data.csv";
-
-    for(;;) {
-        FILE *fp;
-        // Get the current mission time
-        const char* mission_time = time_elapsed_DDHHMMSSTT();
-        printf("Debug - Current mission time: %s\n", mission_time);
-        
-        fp = fopen(filename, "a"); // Open in append mode
-        if (fp == NULL) {
-            printf("Error opening file %s for appending\n", filename);
-            OS_Delay(30);
-            continue;
-        }
-        
-        // Write to file
-        int result = fprintf(fp, "%s,%s,%s\n", callsign, mission_time, eom);
-        if (result < 0) {
-            printf("Error writing to file %s. Error code: %d\n", filename, result);
-        } else {
-            printf("Data appended to CSV: %s,%s,%s\n", callsign, mission_time, eom);
-        }
-        
-        fclose(fp);
-        
-        printf("TaskDataPrep: Data processing complete at %s\n", mission_time);
-        OSSignalBinSem(BINSEM_DATA_READY);
+//    char callsign[] = "KQ4NPQ"; // Bogdan's FCC Callsign
+//    char eom[] = "<EOM>"; // Signifies the end of the message
+//    char filename[] = "sat_data.csv";
+//
+//    for(;;) {
+//        FILE *fp;
+//        // Get the current mission time
+//        const char* mission_time = time_elapsed_DDHHMMSSTT();
+//        printf("Debug - Current mission time: %s\n", mission_time);
+//        
+//        fp = fopen(filename, "a"); // Open in append mode
+//        if (fp == NULL) {
+//            printf("Error opening file %s for appending\n", filename);
+//            OS_Delay(30);
+//            continue;
+//        }
+//        
+//        // Write to file
+//        int result = fprintf(fp, "%s,%s,%s\n", callsign, mission_time, eom);
+//        if (result < 0) {
+//            printf("Error writing to file %s. Error code: %d\n", filename, result);
+//        } else {
+//            printf("Data appended to CSV: %s,%s,%s\n", callsign, mission_time, eom);
+//        }
+//        
+//        fclose(fp);
+//        
+//        printf("TaskDataPrep: Data processing complete at %s\n", mission_time);
+//        OSSignalBinSem(BINSEM_DATA_READY);
         OS_Delay(30);
-    }
+    //}
 }
 
 
 void TaskPowerMGMT(void) { 
+    int inLowPowerMode = 0;
+    int lowPowerHoldTime = 0;
+    
     for(;;) {
-        printf("TaskPowerMGMT: Checking Power Level \n");
+        // Check the battery level
+        int batteryLevel = checkBatteryLevel();
         
-        printf("Current Battery Level: %d%%\n", checkBatteryLevel());
+        printf("TaskPowerMGMT: Checking Power Level \n");
+        printf("Current Battery Level: %d%%\n", batteryLevel);
+        
+        // Check if we need to enter low power mode
+        if (batteryLevel < 50 && !inLowPowerMode) {
+            printf("TaskPowerMGMT: Entering low power mode!\n");
+            inLowPowerMode = 1;
+            lowPowerHoldTime = 0;
+        }
+        
+        // Handle low power mode
+        if (inLowPowerMode) {
+            // Stay in low power mode until battery is sufficiently recharged
+            if (batteryLevel < 75) {
+                printf("TaskPowerMGMT: In low power mode. Holding for recharge...\n");
+                
+                // Every 10 seconds in low power mode increases battery by 1%
+                lowPowerHoldTime += 50; // We're delaying 50 ticks at a time
+                if (lowPowerHoldTime >= 10 * TICKS_PER_SECOND) {
+                    // Increase battery level
+                    setBatteryLevel(batteryLevel + 1);
+                    lowPowerHoldTime = 0; // Reset counter
+                    printf("TaskPowerMGMT: Battery recharged to %d%%\n", batteryLevel + 1);
+                }
+                
+                // Kick the watchdog to prevent reset while in low power mode
+                ClrWdt();
+            } else {
+                // Battery is sufficiently recharged, exit low power mode
+                printf("TaskPowerMGMT: Exiting low power mode. Battery level: %d%%\n", batteryLevel);
+                inLowPowerMode = 0;
+            }
+        }
+        
+        // Delay for 50 ticks before next check
         OS_Delay(50);
     }
 }
@@ -285,7 +323,7 @@ int main(void) {
     
     while(1) {
     OSSched();
-        if (OSGetTicks() % 5 == 0) {
+        if (OSGetTicks() % 50 == 0) {
            printf("Mission Time: %s\n", time_elapsed_DDHHMMSSTT());
            ClrWdt();
         }
