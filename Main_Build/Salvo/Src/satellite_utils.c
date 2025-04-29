@@ -10,7 +10,7 @@
 #define MIN_PER_DAY   (24ULL * 60ULL)
 
 // Battery simulation variables
-static int g_batteryLevel = 55;
+static int g_batteryLevel = 6;
 static unsigned long lastBatteryUpdate = 0;
 static const unsigned long BATTERY_UPDATE_INTERVAL = 10 * TICKS_PER_SECOND;
 
@@ -56,7 +56,7 @@ int checkBatteryLevel(void) {
     // Only update if some time has passed
     if (elapsedTicks > 0) {
         // Calculate decrease - make it 5% per second for faster testing
-        int decreaseAmount = 5 * (elapsedTicks / TICKS_PER_SECOND);
+        int decreaseAmount = 100 * (elapsedTicks / TICKS_PER_SECOND);
         
         if (decreaseAmount > 0) {
             if (decreaseAmount > g_batteryLevel) {

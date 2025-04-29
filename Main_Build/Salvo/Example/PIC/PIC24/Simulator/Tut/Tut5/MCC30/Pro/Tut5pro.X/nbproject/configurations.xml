@@ -116,6 +116,7 @@
       <itemPath>../../../../../../../../../Src/MCC30/salvohook_wdt_MCC30_clrwdt.c</itemPath>
       <itemPath>../../../../../../../../../Src/satellite_utils.c</itemPath>
     </logicalFolder>
+    <itemPath>../sat_data.csv</itemPath>
   </logicalFolder>
   <sourceRootList>
     <Elem>../..</Elem>

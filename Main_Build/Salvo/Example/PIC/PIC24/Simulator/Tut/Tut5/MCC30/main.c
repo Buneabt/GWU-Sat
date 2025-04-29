@@ -1,47 +1,5 @@
-// DSPIC33FJ256GP710 Configuration Bit Settings
-// Put this at the very top of your main.c or in config.h
-
-// FBS
-#pragma config BWRP = WRPROTECT_OFF     // Boot Segment Write Protect (Boot segment may be written)
-#pragma config BSS = NO_FLASH           // Boot Segment Program Flash Code Protection (No Boot program flash segment)
-#pragma config RBS = NO_RAM             // Boot Segment RAM Protection (No Boot RAM)
-
-// FSS
-#pragma config SWRP = WRPROTECT_OFF     // Secure Segment Program Write Protect (Secure segment may be written)
-#pragma config SSS = NO_FLASH           // Secure Segment Program Flash Code Protection (No Secure Segment)
-#pragma config RSS = NO_RAM             // Secure Segment Data RAM Protection (No Secure RAM)
-
-// FGS
-#pragma config GWRP = OFF               // General Code Segment Write Protect (User program memory is not write-protected)
-#pragma config GSS = OFF                // General Segment Code Protection (User program memory is not code-protected)
-
-// FOSCSEL
-#pragma config FNOSC = FRC              // Oscillator Mode (Internal Fast RC (FRC))
-#pragma config IESO = OFF               // Internal External Switch Over Mode (Start-up device with FRC, then automatically switch to user-selected oscillator source)
-
-// FOSC
-#pragma config POSCMD = XT              // Primary Oscillator Source (XT Crystal Oscillator Mode)
-#pragma config OSCIOFNC = OFF           // OSC2 Pin Function (OSC2 is clock output)
-#pragma config FCKSM = CSECME           // Clock Switching and Monitor (Both Clock Switching and Fail-Safe Clock Monitor are enabled)
-
-// FWDT
-#pragma config WDTPOST = PS32768        // Watchdog Timer Postscaler (1:32,768)
-#pragma config WDTPRE = PR128           // WDT Prescaler (1:128)
-#pragma config WINDIS = OFF             // Watchdog Timer Window (Watchdog Timer in Non-Window mode)
-#pragma config FWDTEN = OFF             // Watchdog Timer Enable (Watchdog timer enabled/disabled by user software)
-
-// FPOR
-#pragma config FPWRT = PWR128           // POR Timer Value (128ms)
-
-// FICD
-#pragma config ICS = PGD2               // Comm Channel Select (Communicate on PGD2/EMUC2 and PGC2/EMUD2)
-#pragma config JTAGEN = OFF             // JTAG Port Enable (JTAG is Disabled)
-
 // Include after config bits
 #include <xc.h>
-
-
-
 
 
 #include <salvo.h>
@@ -142,86 +100,200 @@ void TaskStatusCheck (void) {
     }
 }
 
-void TaskDataPrep(void) { //In memory solution not real
-    static char dataBuffer[1024] = "Callsign,TimeStamp,EndOfMessage\n";
-    static int bufferPos = 37; // Length of header
+#define USE_FILE_STORAGE 0  // Set to 1 for real hardware, 0 for simulator
+
+void TaskDataPrep(void) {
+    char callsign[] = "KQ4NPQ";
+    char eom[] = "<EOM>";
+    
+    #if USE_FILE_STORAGE
+    // File-based storage for real hardware
+    static int file_initialized = 0;
+    
+    // First run initialization
+    if (!file_initialized) {
+        FILE *fp = fopen("sat_data.csv", "r");
+        if (fp == NULL) {
+            // File doesn't exist, create and add header
+            fp = fopen("sat_data.csv", "w");
+            if (fp != NULL) {
+                fprintf(fp, "Callsign,TimeStamp,EndOfMessage\n");
+                fclose(fp);
+            }
+        } else {
+            fclose(fp);
+        }
+        file_initialized = 1;
+    }
+    #else
+    // In-memory storage for simulator
+    static char dataBuffer[2048] = "Callsign,TimeStamp,EndOfMessage\n";
+    static int bufferPos = 37;
+    #endif
     
     for(;;) {
-        // Get the current mission time
         const char* mission_time = time_elapsed_DDHHMMSSTT();
-        printf("TaskDataPrep: Processing data at %s\n", mission_time);
         
-        // Instead of writing to file, store in memory buffer
-        // Add code here to add data to buffer if needed
+        #if USE_FILE_STORAGE
+        // Real hardware: Write to file
+        FILE *fp = fopen("sat_data.csv", "a");
+        if (fp != NULL) {
+            fprintf(fp, "%s,%s,%s\n", callsign, mission_time, eom);
+            fclose(fp);
+            printf("Data written to file: %s,%s,%s\n", callsign, mission_time, eom);
+        } else {
+            printf("Error: Could not open file for writing\n");
+        }
+        #else
+        // Simulator: Store in memory
+        char newData[100];
+        int dataLen = snprintf(newData, sizeof(newData), "%s,%s,%s\n", 
+                               callsign, mission_time, eom);
         
-        // Signal that data is ready
-        printf("TaskDataPrep: Data ready\n");
+        if (bufferPos + dataLen < sizeof(dataBuffer) - 1) {
+            strcpy(&dataBuffer[bufferPos], newData);
+            bufferPos += dataLen;
+            printf("Data added to in-memory storage: %s", newData);
+        } else {
+            printf("Warning: In-memory storage full\n");
+        }
+        #endif
+        
+        printf("TaskDataPrep: Data processing complete\n");
         OSSignalBinSem(BINSEM_DATA_READY);
-        
-        // Important: Kick watchdog before delay
-        OSIdleHook();
         OS_Delay(30);
     }
 }
 
 
 void TaskPowerMGMT(void) { 
-    int inLowPowerMode = 0;
+    int powerMode = 0;        // 0 = normal, 1 = low power, 2 = extreme low power
     int lowPowerHoldTime = 0;
+    int lastPrintTime = 0;    // For controlling print frequency in extreme low power mode
     
-    printf("TaskPowerMGMT: Starting with inLowPowerMode = %d\n", inLowPowerMode);
+    printf("TaskPowerMGMT: Starting in normal power mode\n");
     
     for(;;) {
         // Check the battery level
         int batteryLevel = checkBatteryLevel();
         
-        printf("TaskPowerMGMT: Checking Power Level \n");
-        printf("Current Battery Level: %d%%\n", batteryLevel);
+        // Only print status in extreme low power mode occasionally
+        unsigned long currentTicks = OSGetTicks();
+        int shouldPrint = (powerMode < 2) || (currentTicks - lastPrintTime >= 10 * TICKS_PER_SECOND);
         
-        // Check if we need to enter low power mode
-        if (batteryLevel <= 50 && !inLowPowerMode) {
-            printf("\n*** TaskPowerMGMT: ENTERING LOW POWER MODE! ***\n\n");
-            inLowPowerMode = 1;
+        if (shouldPrint) {
+            printf("TaskPowerMGMT: Checking Power Level \n");
+            printf("Current Battery Level: %d%%\n", batteryLevel);
+            lastPrintTime = currentTicks;
+        }
+        
+        // Check if we need to enter extreme low power mode (under 5%)
+        if (batteryLevel <= 5 && powerMode != 2) {
+            printf("\n*** TaskPowerMGMT: ENTERING EXTREME LOW POWER MODE! ***\n\n");
+            powerMode = 2;
             lowPowerHoldTime = 0;
             
-            // Change priority of this task to higher priority (lower number)
-            // Since this function only affects the current task
+            // Set to highest priority
+            OSSetPrio(PRIO_SYSTEM_SHUT_DOWN);
+        }
+        // Check if we need to enter low power mode (5-50%)
+        else if (batteryLevel <= 50 && batteryLevel > 5 && powerMode != 1 && powerMode != 2) {
+            printf("\n*** TaskPowerMGMT: ENTERING LOW POWER MODE! ***\n\n");
+            powerMode = 1;
+            lowPowerHoldTime = 0;
+            
+            // Change priority of this task to higher priority
             OSSetPrio(PRIO_POWER_MGMT_LOW);
         }
         
+        // Handle extreme low power mode
+        if (powerMode == 2) {
+            // Stay in extreme low power mode until battery reaches 20%
+            if (batteryLevel < 20) {
+                if (shouldPrint) {
+                    printf("TaskPowerMGMT: In EXTREME low power mode. Holding for recharge...\n");
+                }
+                
+                // Every 10 seconds in extreme low power mode increases battery by 1%
+                lowPowerHoldTime += 1; 
+                if (lowPowerHoldTime >= 10 * TICKS_PER_SECOND) {
+                    // Increase battery level
+                    int newLevel = batteryLevel + 1;
+                    setBatteryLevel(newLevel);
+                    lowPowerHoldTime = 0;
+                    
+                    if (shouldPrint) {
+                        printf("TaskPowerMGMT: Battery recharged to %d%%\n", newLevel);
+                    }
+                }
+                
+                // Kick the watchdog to prevent reset
+                ClrWdt();
+                
+                // No delay - this task has complete control
+            } else {
+                // Battery reached 20%, switch to normal low power mode
+                printf("\n*** TaskPowerMGMT: EXITING EXTREME LOW POWER MODE. Battery level: %d%% ***\n", batteryLevel);
+                printf("*** TaskPowerMGMT: ENTERING LOW POWER MODE ***\n\n");
+                powerMode = 1;
+                
+                // Set priority back to low power level
+                OSSetPrio(PRIO_POWER_MGMT_LOW);
+            }
+        }
         // Handle low power mode
-        if (inLowPowerMode == 1) {
+        else if (powerMode == 1) {
             // Stay in low power mode until battery is sufficiently recharged
             if (batteryLevel < 75) {
                 printf("TaskPowerMGMT: In low power mode. Holding for recharge...\n");
                 
                 // Every 10 seconds in low power mode increases battery by 1%
-                lowPowerHoldTime += 10; 
+                lowPowerHoldTime += 10;
                 if (lowPowerHoldTime >= 10 * TICKS_PER_SECOND) {
                     // Increase battery level
                     int newLevel = batteryLevel + 1;
                     setBatteryLevel(newLevel);
-                    lowPowerHoldTime = 0; // Reset counter
+                    lowPowerHoldTime = 0;
                     printf("TaskPowerMGMT: Battery recharged to %d%%\n", newLevel);
                 }
                 
-                // Kick the watchdog to prevent reset while in low power mode
+                // Check if we need to drop to extreme low power mode
+                if (batteryLevel <= 5) {
+                    printf("\n*** TaskPowerMGMT: ENTERING EXTREME LOW POWER MODE! ***\n\n");
+                    powerMode = 2;
+                    OSSetPrio(PRIO_SYSTEM_SHUT_DOWN);
+                    continue;  // Skip the delay and go back to top of loop
+                }
+                
+                // Kick the watchdog to prevent reset
                 ClrWdt();
+                
+                // Allow other tasks to run
+                OS_Delay(10);
             } else {
                 // Battery is sufficiently recharged, exit low power mode
                 printf("\n*** TaskPowerMGMT: EXITING LOW POWER MODE. Battery level: %d%% ***\n\n", batteryLevel);
-                inLowPowerMode = 0;
+                powerMode = 0;
                 
                 // Restore original priority
                 OSSetPrio(PRIO_POWER_MGMT_NORMAL);
+                OS_Delay(10);
             }
         } else {
-            // Not in low power mode
+            // Normal operation mode
             printf("TaskPowerMGMT: Normal operation mode, battery level: %d%%\n", batteryLevel);
+            
+            // Check if we need to drop to extreme low power mode
+            if (batteryLevel <= 5) {
+                printf("\n*** TaskPowerMGMT: ENTERING EXTREME LOW POWER MODE! ***\n\n");
+                powerMode = 2;
+                OSSetPrio(PRIO_SYSTEM_SHUT_DOWN);
+                continue;  // Skip the delay and go back to top of loop
+            }
+            
+            // Allow other tasks to run
+            OS_Delay(10);
         }
-        
-        // Delay for 10 ticks before next check
-        OS_Delay(10);
     }
 }
 
