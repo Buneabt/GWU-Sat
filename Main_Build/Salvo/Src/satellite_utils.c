@@ -9,11 +9,6 @@
 #define MIN_PER_HOUR  60ULL
 #define MIN_PER_DAY   (24ULL * 60ULL)
 
-// Battery simulation variables
-static int g_batteryLevel = 6;
-static unsigned long lastBatteryUpdate = 0;
-static const unsigned long BATTERY_UPDATE_INTERVAL = 10 * TICKS_PER_SECOND;
-
 // Function to format the elapsed time
 const char* time_elapsed_DDHHMMSSTT(void) {
     static char str[16];  // DD:HH:MM:SS\0
