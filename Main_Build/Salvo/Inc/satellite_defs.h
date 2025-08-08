@@ -21,7 +21,7 @@
 #define TASK_DATA_PREP_P       OSTCBP(7)  
 #define TASK_COMM_READ_P       OSTCBP(8)
 #define TASK_SYSTEM_SHUT_DOWN  OSTCBP(9)
-#define TASK_IDLE_P            OSTCBP(10)  // Fixed: Changed from TaskIdle to TASK_IDLE_P
+#define TASK_IDLE_P            OSTCBP(10)  
 
 // Task Priorities
 #define PRIO_SYSTEM_INIT       0 //This will always be 0 and 1
@@ -34,14 +34,6 @@
 
 // Binary Semaphore Control Block Pointers
 #define BINSEM_INIT_COMPLETE       OSECBP(1)
-#define BINSEM_OVER_GROUND_STATION OSECBP(2)
-#define BINSEM_STATUS_CHECKED      OSECBP(3)
-#define BINSEM_COMMS_COMPLETE      OSECBP(4)
-#define BINSEM_EXPERIMENT_WINDOW   OSECBP(5)
-#define BINSEM_EXPERIMENT_COMPLETE OSECBP(6)
-#define BINSEM_DATA_NEEDED         OSECBP(7) 
-#define BINSEM_DATA_READY          OSECBP(8)
-#define BINSEM_SYS_SHUT_DOWN       OSECBP(9)
 
 // Helper function prototypes
 unsigned long SecondsToTicks(unsigned long seconds);
