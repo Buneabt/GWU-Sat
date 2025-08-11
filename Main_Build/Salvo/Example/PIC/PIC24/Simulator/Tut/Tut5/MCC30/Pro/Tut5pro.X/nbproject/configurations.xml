@@ -46,8 +46,31 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
+      <logicalFolder name="f2" displayName="drivers" projectFiles="true">
+        <itemPath>../../i2c_driver.h</itemPath>
+        <itemPath>../../eps_driver.h</itemPath>
+        <itemPath>../../task_status_check.h</itemPath>
+        <itemPath>../../i2c_driver.c</itemPath>
+        <itemPath>../../eps_driver.c</itemPath>
+        <itemPath>../../uart_driver.h</itemPath>
+        <itemPath>../../uart_driver.c</itemPath>
+        <itemPath>../../timer_driver.h</itemPath>
+        <itemPath>../../timer_driver.c</itemPath>
+      </logicalFolder>
       <logicalFolder name="MCC30" displayName="MCC30" projectFiles="true">
         <itemPath>../../../../../../../../../Src/MCC30/salvoportmcc30.h</itemPath>
+      </logicalFolder>
+      <logicalFolder name="f3" displayName="system" projectFiles="true">
+        <itemPath>../../data_structures.h</itemPath>
+      </logicalFolder>
+      <logicalFolder name="f1" displayName="tasks" projectFiles="true">
+        <itemPath>../../task_data_logging.h</itemPath>
+        <itemPath>../../task_data_logging.c</itemPath>
+        <itemPath>../../task_status_check.c</itemPath>
+        <itemPath>../../task_system.h</itemPath>
+        <itemPath>../../task_system.c</itemPath>
+        <itemPath>../../task_idle.h</itemPath>
+        <itemPath>../../task_idle.c</itemPath>
       </logicalFolder>
       <itemPath>../../main.c</itemPath>
       <itemPath>../../../../../../../../../Src/salvoarray.c</itemPath>
@@ -444,6 +467,7 @@
         <property key="event.recorder.debugger.behavior" value="Running"/>
         <property key="event.recorder.enabled" value="false"/>
         <property key="event.recorder.scvd.files" value=""/>
+        <property key="firmware.download.all" value="false"/>
         <property key="hwtoolclock.frcindebug" value="false"/>
         <property key="lastid" value=""/>
         <property key="memories.aux" value="false"/>

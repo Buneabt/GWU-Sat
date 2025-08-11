@@ -2,14 +2,24 @@
 #define SATELLITE_DEFS_H
 
 // System clock definition
-#define TICKS_PER_SECOND       100  // Assuming this value based on your salvocfg.h
+#define TICKS_PER_SECOND       100  // 100 ticks per second
 #define TICKS_PER_MINUTE       (TICKS_PER_SECOND * 60)
 
 // Battery Definitions
 #define LOW_POWER_THRESHOLD 15000
 
-#define FOSC    7372800ULL  // System clock frequency (adjust this to match your config)
+#define FOSC    7372800ULL  // System clock frequency 
 #define FCY     (FOSC/2)    // Instruction cycle frequency
+
+// Satellite identification
+#define SATELLITE_CALLSIGN     "KQ4NPQ"
+#define CALLSIGN_LENGTH        7  // Including null terminator
+
+// SD Card configuration - adjust pins to match your hardware
+#define SD_CS_TRIS      TRISBbits.TRISB0    // Chip Select as output
+#define SD_CS_PORT      LATBbits.LATB0      // Chip Select pin
+#define SD_CS_ACTIVE    0                   // Active low
+#define SD_CS_INACTIVE  1                   // Inactive high
 
 // Task Control Block Pointers
 #define TASK_SYSTEM_INIT_P     OSTCBP(1)
