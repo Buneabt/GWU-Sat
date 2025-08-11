@@ -58,36 +58,46 @@ void OSIdleHook(void) {
 int main(void) {
     // Initialize hardware drivers
     UART_Init();
+    ClrWdt();  // Kick watchdog after UART init
     printf("\n--- Satellite System Start ---\n");
     
     // Initialize Salvo RTOS
     OSInit();
+    ClrWdt();  // Kick watchdog after RTOS init
     printf("Salvo RTOS initialized\n");
     
     // Create initialization semaphore
     OSCreateBinSem(BINSEM_INIT_COMPLETE, 0);
+    ClrWdt();  // Kick watchdog
     printf("Initialization semaphore created\n");
     
     // Create startup tasks
     OSCreateTask(TaskSystemInit, TASK_SYSTEM_INIT_P, PRIO_SYSTEM_INIT);
+    ClrWdt();  // Kick watchdog
     OSCreateTask(TaskStartSystem, TASK_START_SYSTEM_P, PRIO_START_SYSTEM);
+    ClrWdt();  // Kick watchdog
     printf("Startup tasks created\n");
     
     // Initialize and start system timer
     Timer_Init();
     Timer_Start();
+    ClrWdt();  // Kick watchdog
     printf("System timer initialized\n");
     
     // Initialize tick counter
     OSSetTicks(0);
+    ClrWdt();  // Kick watchdog
     printf("Tick counter initialized\n");
     
     printf("Starting scheduler\n");
     printf("--- System Ready ---\n");
+    ClrWdt();  // Final kick before main loop
     
     // Main scheduler loop
     while(1) {
         OSSched();
+        // Note: Individual tasks will kick watchdog, 
+        // main loop doesn't need to since scheduler yields to tasks
     }
     
     // Should never reach here

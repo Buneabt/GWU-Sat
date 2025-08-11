@@ -2,6 +2,7 @@
 #define UART_DRIVER_H
 
 #include <stdint.h>
+#include <stddef.h>  // For NULL definition
 
 // UART configuration
 #define UART_BAUD_RATE      9600

@@ -2,6 +2,7 @@
 #define TASK_DATA_LOGGING_H
 
 #include "data_structures.h"
+#include <stdint.h>  // For uint16_t
 
 // Data logging functions
 log_result_t DataLog_LogMissionData(unsigned long mission_time, const char* status);

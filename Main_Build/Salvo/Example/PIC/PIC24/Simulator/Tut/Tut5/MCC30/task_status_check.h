@@ -2,6 +2,7 @@
 #define TASK_STATUS_CHECK_H
 
 #include <salvo.h>
+#include <stdint.h>  // For uint8_t
 #include "satellite_defs.h"
 #include "eps_driver.h"
 

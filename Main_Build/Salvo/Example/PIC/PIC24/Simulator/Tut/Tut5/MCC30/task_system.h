@@ -2,6 +2,7 @@
 #define TASK_SYSTEM_H
 
 #include <salvo.h>
+#include <stdint.h>  // For uint8_t definition
 
 // System task functions
 void TaskSystemInit(void);
@@ -11,6 +12,6 @@ void TaskSystemShutdown(void);
 // System state functions
 void System_InitializeHardware(void);
 void System_CreateOperationalTasks(void);
-uint8_t System_SelfTest(void);
+uint8_t System_SelfTest(void);  // Fixed: Added uint8_t return type
 
 #endif // TASK_SYSTEM_H

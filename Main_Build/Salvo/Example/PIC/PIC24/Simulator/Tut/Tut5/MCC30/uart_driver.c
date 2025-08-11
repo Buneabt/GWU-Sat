@@ -1,6 +1,7 @@
 #include "uart_driver.h"
 #include "satellite_defs.h"
 #include <xc.h>
+#include <stddef.h>  // For NULL definition
 
 // Write function for printf support - using UART1 consistently
 int __attribute__((__section__(".libc.write"))) write(int handle, void *buffer, unsigned int len) {
