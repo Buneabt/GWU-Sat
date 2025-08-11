@@ -10,12 +10,11 @@ void TaskIdle(void) {
     static unsigned long last_heartbeat_time = 0;
     unsigned long current_time;
     
-    ClrWdt();  // Kick watchdog at start
+    
     printf("TaskIdle: Starting - heartbeat every 10 seconds\n");
     printf("TaskIdle: Using RAM logging system\n");
     
     for(;;) {
-        ClrWdt();  // Kick watchdog at start of loop
         
         // Get current system time in ticks
         current_time = OSGetTicks();
@@ -28,7 +27,7 @@ void TaskIdle(void) {
             last_heartbeat_time = current_time;
         }
         
-        ClrWdt();  // Kick watchdog before delay
+        
         
         // Yield to other tasks and delay for 100 ticks (1 second)
         OS_Delay(100);

@@ -20,7 +20,8 @@ build/default/debug/_ext/43898991/main.o: ../../main.c \
  ../../../../../../../../../Inc/salvofpt.h \
  ../../../../../../../../../Inc/satellite_defs.h \
  ../../../../../../../../../Inc/satellite_utils.h \
- ../../../../../../../../../Inc/satellite_defs.h
+ ../../../../../../../../../Inc/satellite_defs.h ../../uart_driver.h \
+ ../../timer_driver.h ../../task_system.h
 
 ../../../../../../../../../Inc/salvo.h:
 
@@ -67,3 +68,9 @@ build/default/debug/_ext/43898991/main.o: ../../main.c \
 ../../../../../../../../../Inc/satellite_utils.h:
 
 ../../../../../../../../../Inc/satellite_defs.h:
+
+../../uart_driver.h:
+
+../../timer_driver.h:
+
+../../task_system.h:
