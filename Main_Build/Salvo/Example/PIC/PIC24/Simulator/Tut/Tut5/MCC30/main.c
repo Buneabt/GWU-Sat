@@ -1,9 +1,46 @@
-// Essential Configuration Bits Only
-#pragma config FNOSC = FRC              // Internal Fast RC Oscillator
-#pragma config FWDTEN = OFF             // Watchdog Timer Off
-#pragma config JTAGEN = OFF             // JTAG Disabled             
+// 'C' source line config statements
+
+// FBS
+#pragma config BWRP = WRPROTECT_OFF     // Boot Segment Write Protect (Boot Segment may be written)
+#pragma config BSS = NO_FLASH           // Boot Segment Program Flash Code Protection (No Boot program Flash segment)
+#pragma config RBS = NO_RAM             // Boot Segment RAM Protection (No Boot RAM)
+
+// FSS
+#pragma config SWRP = WRPROTECT_OFF     // Secure Segment Program Write Protect (Secure Segment may be written)
+#pragma config SSS = NO_FLASH           // Secure Segment Program Flash Code Protection (No Secure Segment)
+#pragma config RSS = NO_RAM             // Secure Segment Data RAM Protection (No Secure RAM)
+
+// FGS
+#pragma config GWRP = OFF               // General Code Segment Write Protect (User program memory is not write-protected)
+#pragma config GSS = OFF                // General Segment Code Protection (User program memory is not code-protected)
+
+// FOSCSEL
+#pragma config FNOSC = LPRCDIVN         // Oscillator Mode (Internal Fast RC (FRC) with divide by N)
+#pragma config IESO = ON                // Two-speed Oscillator Start-Up Enable (Start up with FRC, then switch)
+
+// FOSC
+#pragma config POSCMD = XT              // Primary Oscillator Source (XT Oscillator Mode)
+#pragma config OSCIOFNC = OFF           // OSC2 Pin Function (OSC2 pin has clock out function)
+#pragma config FCKSM = CSDCMD           // Clock Switching and Monitor (Both Clock Switching and Fail-Safe Clock Monitor are disabled)
+
+// FWDT
+#pragma config WDTPOST = PS32768        // Watchdog Timer Postscaler (1:32,768)
+#pragma config WDTPRE = PR128           // WDT Prescaler (1:128)
+#pragma config WINDIS = OFF             // Watchdog Timer Window (Watchdog Timer in Non-Window mode)
+#pragma config FWDTEN = ON              // Watchdog Timer Enable (Watchdog timer always enabled)
+
+// FPOR
+#pragma config FPWRT = PWR128           // POR Timer Value (128ms)
+
+// FICD
+#pragma config ICS = PGD1               // Comm Channel Select (Communicate on PGC1/EMUC1 and PGD1/EMUD1)
+#pragma config JTAGEN = OFF             // JTAG Port Enable (JTAG is Disabled)
+
+// #pragma config statements should precede project file includes.
+// Use project enums instead of #define for ON and OFF.
 
 #include <xc.h>
+
 #include <salvo.h>
 #include "p33FJ256GP710.h"
 #include "satellite_defs.h"
@@ -17,13 +54,13 @@ void TaskSystemInit(void);
 void TaskStartSystem(void);
 void TaskIdle(void);
 
-// Write function for printf support
+// Write function for printf support - using UART1 consistently
 int __attribute__((__section__(".libc.write"))) write(int handle, void *buffer, unsigned int len) {
     int i;
     if (handle != 1) return -1;  // Only support stdout
     
     for (i = 0; i < len; i++) {
-        while (U1STAbits.UTXBF);  
+        while (U1STAbits.UTXBF);  // Use UART1 (working UART)
         U1TXREG = *(char*)buffer++;
     }
     return len;
@@ -34,49 +71,38 @@ void OSIdleHook(void) {
     ClrWdt();
 }
 
-// UART initialization for debug output
+// UART initialization - using the working UART1 configuration
 void initUART(void) {
-    // Assert: Valid FCY value
-    if (FCY == 0) return;
-    
     U1MODEbits.UARTEN = 0;      // Disable during config
-    
-    // Configure UART1 settings
     U1MODEbits.STSEL = 0;       // 1 Stop bit
     U1MODEbits.PDSEL = 0;       // No Parity, 8 data bits
     U1MODEbits.ABAUD = 0;       // Auto-Baud disabled
     U1MODEbits.BRGH = 0;        // Standard Speed mode
     
-    // Calculate and set baud rate
-    U1BRG = ((FCY/9600)/16) - 1;
+    U1BRG = 25;                 // For FCY=4MHz, 9600 baud (WORKING VALUE)
     
-    // Assert: BRG value is reasonable
-    if (U1BRG > 65535) return;
-    
-    // Enable UART
-    U1MODEbits.UARTEN = 1;      
-    U1STAbits.UTXEN = 1;        
+    U1MODEbits.UARTEN = 1;      // Enable UART
+    U1STAbits.UTXEN = 1;        // Enable TX
 }
 
-// Character output for printf
+// Character output for printf - using UART1
 int putchar(int c) {
-    // Assert: Valid character range
     if (c < 0 || c > 255) return -1;
     
-    while (U1STAbits.UTXBF);    // Wait for TX buffer
+    while (U1STAbits.UTXBF);    // Wait for UART1 TX buffer
     U1TXREG = c;
     return c;
 }
 
 // Timer1 initialization for system tick
 void initTimer1(void) {
-    // Assert: Timer registers accessible
     T1CON = 0x0000;             // Clear timer config
     TMR1 = 0;                   // Clear timer value
-    PR1 = 15625;                // Set period for 100Hz at FCY/256
     
-    // Assert: PR1 value is non-zero
-    if (PR1 == 0) return;
+    // For FCY=4MHz, want 100Hz tick: 4MHz / 256 / 100Hz = 156
+    PR1 = 156;                  // Set period for 100Hz at FCY/256
+    
+    if (PR1 == 0) return;       // Safety check
     
     T1CONbits.TCKPS = 0b11;     // 1:256 prescaler
     IPC0bits.T1IP = 4;          // Interrupt priority 4
@@ -122,7 +148,8 @@ void TaskStartSystem(void) {
 
 // Idle task - runs continuously after system startup
 void TaskIdle(void) {
-    unsigned long tick_counter = 0;
+    static unsigned long last_heartbeat_time = 0;
+    unsigned long current_time;
     
     printf("TaskIdle: Entering idle state\n");
     
@@ -130,15 +157,17 @@ void TaskIdle(void) {
         // Kick watchdog to prevent reset
         ClrWdt();
         
+        // Get current system time in ticks
+        current_time = OSGetTicks();
+        
         // Print heartbeat every 10 seconds (1000 ticks at 100Hz)
-        tick_counter++;
-        if (tick_counter >= 1000) {
-            printf("TaskIdle: Heartbeat - System running\n");
-            tick_counter = 0;
+        if ((current_time - last_heartbeat_time) >= 1000) {
+            printf("TaskIdle: Heartbeat - System running (Ticks: %lu)\n", current_time);
+            last_heartbeat_time = current_time;
         }
         
-        // Yield to other tasks and delay
-        OS_Delay(1);
+        // Yield to other tasks and delay for 100 ticks (1 second)
+        OS_Delay(100);
     }
 }
 
