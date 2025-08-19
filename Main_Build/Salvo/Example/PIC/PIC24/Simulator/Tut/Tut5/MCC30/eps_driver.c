@@ -70,7 +70,8 @@ void EPS_PrintStatus(eps_status_t status) {
 // Check if EPS is healthy (no critical errors)
 uint8_t EPS_IsHealthy(eps_status_t status) {
     // EPS is considered healthy if no critical errors are present
-    if (status.watchdog_error || status.data_error || 
+    if (!status.command_recognized && //First make sure we are actually attached to it
+        status.watchdog_error || status.data_error || 
         status.channel_error || status.eeprom_error) {
         return 0;  // Not healthy
     }
