@@ -57,6 +57,8 @@
         <itemPath>../../timer_driver.c</itemPath>
         <itemPath>../../battery_driver.h</itemPath>
         <itemPath>../../battery_driver.c</itemPath>
+        <itemPath>../../uhf_driver.h</itemPath>
+        <itemPath>../../uhf_driver.c</itemPath>
       </logicalFolder>
       <logicalFolder name="MCC30" displayName="MCC30" projectFiles="true">
         <itemPath>../../../../../../../../../Src/MCC30/salvoportmcc30.h</itemPath>

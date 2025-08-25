@@ -1,6 +1,7 @@
 #include "task_system.h"
 #include "satellite_defs.h"
 #include "eps_driver.h"
+#include "uhf_driver.h"
 #include "task_data_logging.h"
 #include "task_status_check.h"
 #include "task_idle.h"
@@ -11,19 +12,7 @@ void TaskSystemInit(void) {
     
     printf("TaskSystemInit: Starting hardware init\n");
     
-    // Initialize EPS communication
-    if (EPS_Init()) {
-        printf("TaskSystemInit: EPS communication OK\n");
-    } else {
-        printf("TaskSystemInit: EPS communication failed\n");
-    }
-    
-    // Initialize Battery communication
-    if (Battery_Init()) {
-        printf("TaskSystemInit: Battery communication OK\n");
-    } else {
-        printf("TaskSystemInit: Battery communication failed\n");
-    }
+    System_InitializeHardware();
     
     // Check if we have at least one power system
     eps_status_t eps_status = EPS_GetBoardStatus();
@@ -122,6 +111,20 @@ void System_InitializeHardware(void) {
     } else {
         printf("System: EPS communication failed\n");
     }
+    
+    // Initialize Battery communication
+    if (Battery_Init()) {
+        printf("TaskSystemInit: Battery communication OK\n");
+    } else {
+        printf("TaskSystemInit: Battery communication failed\n");
+    }
+    
+    // Initialize Transceiver 
+//    if(UHF_Init()) {
+//        printf("System: UHF communication established\n");
+//    } else {
+//        printf("System: UHF communication failed\n");
+//    }
     
     // Initialize data logging system
     DataLog_Clear();

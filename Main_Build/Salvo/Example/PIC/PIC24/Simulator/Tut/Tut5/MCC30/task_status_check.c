@@ -1,6 +1,7 @@
 #include "task_status_check.h"
 #include "task_data_logging.h"
 #include "battery_driver.h"
+#include "uhf_driver.h"
 #include <stdio.h>
 
 // EPS and Battery Status Check Task
@@ -30,6 +31,11 @@ void TaskStatusCheck(void) {
             Battery_PrintStatus(battery_status);
             uint8_t battery_healthy = Battery_IsHealthy(battery_status);
             
+            // Check Transceiver Status
+            printf("TaskStatusCheck: Querying Transceiver...\n");
+            //uhf_status_t uhf_status = UHF_GetBoardStatus();
+            
+            
             // Log combined power system status
             StatusCheck_LogPowerStatus(current_time / 100, eps_healthy, battery_healthy);
             
@@ -45,6 +51,7 @@ void TaskStatusCheck(void) {
                     printf("\n");
                 }
             }
+            
             
             // Check for critical power failure
             if (!eps_healthy && !battery_healthy) {

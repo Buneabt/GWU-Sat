@@ -57,7 +57,7 @@ void OSIdleHook(void) {
 // Main function - clean and focused
 int main(void) {
     // Initialize hardware drivers
-    UART_Init();
+    UART_Init(24);// Initializes to 9600
     
     printf("\n--- Satellite System Start ---\n");
     

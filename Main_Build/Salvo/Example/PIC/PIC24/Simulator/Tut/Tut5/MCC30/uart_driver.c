@@ -9,18 +9,14 @@ int __attribute__((__section__(".libc.write"))) write(int handle, void *buffer, 
 }
 
 // Initialize UART1 for console output
-void UART_Init(void) {
+void UART_Init(int port) {
     U1MODEbits.UARTEN = 0;      // Disable during config
     U1MODEbits.STSEL = 0;       // 1 Stop bit
     U1MODEbits.PDSEL = 0;       // No Parity, 8 data bits
     U1MODEbits.ABAUD = 0;       // Auto-Baud disabled
     U1MODEbits.BRGH = 0;        // Standard Speed mode
     
-    // Correct calculation using your actual FCY
-    // BRG = (FCY / (16 * BAUD_RATE)) - 1
-    // For FCY=3,686,400Hz, BAUD=9600: 
-    // BRG = (3686400 / (16 * 9600)) - 1 = 23
-    U1BRG = 24;  
+    U1BRG = port; //Adjusted higher or lower as needed sometimes baud rate doesnt match for some reason
     
     U1MODEbits.UARTEN = 1;      // Enable UART
     U1STAbits.UTXEN = 1;        // Enable TX

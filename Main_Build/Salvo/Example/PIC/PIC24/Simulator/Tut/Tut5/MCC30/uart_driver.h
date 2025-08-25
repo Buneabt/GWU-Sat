@@ -9,7 +9,7 @@
 #define UART_BUFFER_SIZE    128
 
 // Function prototypes
-void UART_Init(void);
+void UART_Init(int port);
 void UART_SendByte(uint8_t data);
 void UART_SendString(const char* str);
 uint8_t UART_ReceiveByte(void);
