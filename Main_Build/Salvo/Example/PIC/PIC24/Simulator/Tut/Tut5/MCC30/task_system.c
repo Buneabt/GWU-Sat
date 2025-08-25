@@ -12,24 +12,37 @@ void TaskSystemInit(void) {
     printf("TaskSystemInit: Starting hardware init\n");
     
     // Initialize EPS communication
-    
     if (EPS_Init()) {
         printf("TaskSystemInit: EPS communication OK\n");
     } else {
         printf("TaskSystemInit: EPS communication failed\n");
     }
     
-    // Initialize data logging system
+    // Initialize Battery communication
+    if (Battery_Init()) {
+        printf("TaskSystemInit: Battery communication OK\n");
+    } else {
+        printf("TaskSystemInit: Battery communication failed\n");
+    }
     
+    // Check if we have at least one power system
+    eps_status_t eps_status = EPS_GetBoardStatus();
+    battery_status_t battery_status = Battery_GetBoardStatus();
+    
+    if (!EPS_IsHealthy(eps_status) && !Battery_IsHealthy(battery_status)) {
+        printf("TaskSystemInit: CRITICAL - No power system available!\n");
+        // Log critical failure
+        DataLog_LogMissionData(0, "INIT_POWER_FAIL");
+    }
+    
+    // Initialize data logging system
     DataLog_Clear();
     DataLog_LogMissionData(0, "SYSTEM_START");
     printf("TaskSystemInit: Data logging OK\n");
     
     // Simple self-test
-    
     printf("TaskSystemInit: Running basic tests\n");
     System_SelfTest();
-    
     
     printf("TaskSystemInit: Initialization complete\n");
     
@@ -37,14 +50,7 @@ void TaskSystemInit(void) {
     OSSignalBinSem(BINSEM_INIT_COMPLETE);
     printf("TaskSystemInit: Signaled completion\n");
     
-    // Small delay before destroying to ensure signal is processed
-    printf("TaskSystemInit: About to signal completion\n");
-    OSSignalBinSem(BINSEM_INIT_COMPLETE);
-    printf("TaskSystemInit: Completion signaled\n");
-    
-    // Either terminate or wait
     printf("TaskSystemInit: Terminating\n");
-    
     OS_Destroy();
 }
 

@@ -16,10 +16,11 @@ void UART_Init(void) {
     U1MODEbits.ABAUD = 0;       // Auto-Baud disabled
     U1MODEbits.BRGH = 0;        // Standard Speed mode
     
-    // Calculate baud rate register value
+    // Correct calculation using your actual FCY
     // BRG = (FCY / (16 * BAUD_RATE)) - 1
-    // For FCY=4MHz, BAUD=9600: BRG = (4000000 / (16 * 9600)) - 1 = 25
-    U1BRG = 25;
+    // For FCY=3,686,400Hz, BAUD=9600: 
+    // BRG = (3686400 / (16 * 9600)) - 1 = 23
+    U1BRG = 24;  
     
     U1MODEbits.UARTEN = 1;      // Enable UART
     U1STAbits.UTXEN = 1;        // Enable TX

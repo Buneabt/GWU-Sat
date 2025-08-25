@@ -15,11 +15,11 @@
 #pragma config GSS = OFF                // General Segment Code Protection (User program memory is not code-protected)
 
 // FOSCSEL
-#pragma config FNOSC = LPRCDIVN         // Oscillator Mode (Internal Fast RC (FRC) with divide by N)
-#pragma config IESO = ON                // Two-speed Oscillator Start-Up Enable (Start up with FRC, then switch)
+#pragma config FNOSC = FRC        
+#pragma config IESO = OFF                
 
 // FOSC
-#pragma config POSCMD = XT              // Primary Oscillator Source (XT Oscillator Mode)
+#pragma config POSCMD = NONE              // Primary Oscillator Source (XT Oscillator Mode)
 #pragma config OSCIOFNC = OFF           // OSC2 Pin Function (OSC2 pin has clock out function)
 #pragma config FCKSM = CSDCMD           // Clock Switching and Monitor (Both Clock Switching and Fail-Safe Clock Monitor are disabled)
 

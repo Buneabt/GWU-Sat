@@ -50,27 +50,51 @@ i2c_result_t EPS_GetTelemetry(void) {
     return I2C_SendCommand(EPS_I2C_ADDRESS, EPS_CMD_GET_TELEMETRY, 0x00);
 }
 
-// Print EPS status in readable format
+// Print EPS status in human-readable format
 void EPS_PrintStatus(eps_status_t status) {
-    printf("EPS Status Analysis:\n");
-    printf("  Command Recognition: %s\n", status.command_recognized ? "OK" : "ERROR");
-    printf("  Watchdog Error: %s\n", status.watchdog_error ? "ERROR" : "OK");
-    printf("  Data Error: %s\n", status.data_error ? "ERROR" : "OK");
-    printf("  Channel Error: %s\n", status.channel_error ? "ERROR" : "OK");
-    printf("  EEPROM Error: %s\n", status.eeprom_error ? "ERROR" : "OK");
-    printf("  Power-On Reset: %s\n", status.power_on_reset ? "OCCURRED" : "OK");
-    printf("  Brown-Out Reset: %s\n", status.brown_out_reset ? "OCCURRED" : "OK");
-    
-    printf("  Extended Status: 0x%02X 0x%02X 0x%02X\n", 
-           status.extended_status[0], 
-           status.extended_status[1], 
-           status.extended_status[2]);
+    // Check if healthy first
+    if (EPS_IsHealthy(status)) {
+        printf("EPS: OK\n");
+        
+        // Only show additional info if there are non-critical events
+        if (status.brown_out_reset) {
+            printf("  Note: Brownout reset occurred\n");
+        }
+        if (status.power_on_reset) {
+            printf("  Note: Power-on reset occurred\n");
+        }
+    } else {
+        // Show specific failures only when unhealthy
+        printf("EPS: FAILURE\n");
+        
+        if (!status.command_recognized) {
+            printf("  Error: Command not recognized (no communication)\n");
+        }
+        if (status.watchdog_error) {
+            printf("  Error: Watchdog reset\n");
+        }
+        if (status.data_error) {
+            printf("  Error: Data incorrect\n");
+        }
+        if (status.channel_error) {
+            printf("  Error: Channel incorrect\n");
+        }
+        if (status.eeprom_error) {
+            printf("  Error: EEPROM error\n");
+        }
+        
+        // Show extended status only if there are errors
+        printf("  Extended Status: 0x%02X 0x%02X 0x%02X\n",
+               status.extended_status[0], 
+               status.extended_status[1], 
+               status.extended_status[2]);
+    }
 }
 
 // Check if EPS is healthy (no critical errors)
 uint8_t EPS_IsHealthy(eps_status_t status) {
     // EPS is considered healthy if no critical errors are present
-    if (!status.command_recognized && //First make sure we are actually attached to it
+    if (!status.command_recognized || //First make sure we are actually attached to it
         status.watchdog_error || status.data_error || 
         status.channel_error || status.eeprom_error) {
         return 0;  // Not healthy

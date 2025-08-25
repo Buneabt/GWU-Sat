@@ -8,8 +8,8 @@
 // Battery Definitions
 #define LOW_POWER_THRESHOLD 15000
 
-#define FOSC    7372800ULL  // System clock frequency 
-#define FCY     (FOSC/2)    // Instruction cycle frequency
+#define FOSC    8000000ULL      // 8MHz internal FRC
+#define FCY     (FOSC/2)        // 4MHz instruction cycle
 
 // Satellite identification
 #define SATELLITE_CALLSIGN     "KQ4NPQ"
