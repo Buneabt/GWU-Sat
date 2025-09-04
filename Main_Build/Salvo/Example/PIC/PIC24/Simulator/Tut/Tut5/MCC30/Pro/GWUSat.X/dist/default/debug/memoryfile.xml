@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project>
+  <executable name="dist/default/debug/GWUSat.X.debug.elf">
+    <memory name="data">
+      <units>bytes</units>
+      <length>30720</length>
+      <used>12164</used>
+      <free>18556</free>
+    </memory>
+    <memory name="program">
+      <units>bytes</units>
+      <length>261888</length>
+      <used>37809</used>
+      <free>224079</free>
+    </memory>
+  </executable>
+</project>
