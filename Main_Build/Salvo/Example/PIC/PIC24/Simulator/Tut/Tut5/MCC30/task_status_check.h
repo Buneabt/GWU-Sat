@@ -12,7 +12,5 @@
 // Task function
 void TaskStatusCheck(void);
 
-// Helper function to log power system status
-void StatusCheck_LogPowerStatus(unsigned long mission_time, uint8_t eps_healthy, uint8_t battery_healthy);
 
 #endif // TASK_STATUS_CHECK_H

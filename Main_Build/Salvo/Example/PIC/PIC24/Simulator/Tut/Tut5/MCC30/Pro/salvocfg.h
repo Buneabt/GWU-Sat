@@ -32,7 +32,7 @@
 #define OSENABLE_STACK_CHECKING TRUE
 #define OSENABLE_IDLEHOOK        TRUE
 #define OSENABLE_WATCHDOG        TRUE
-#define OSTASK_STACK_SIZE              1024
+#define OSTASK_STACK_SIZE              2048
 
 
 #endif // SALVOCFG_H

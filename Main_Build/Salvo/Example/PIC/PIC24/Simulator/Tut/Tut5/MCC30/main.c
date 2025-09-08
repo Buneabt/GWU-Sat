@@ -15,13 +15,13 @@
 #pragma config GSS = OFF                // General Segment Code Protection (User program memory is not code-protected)
 
 // FOSCSEL
-#pragma config FNOSC = FRC        
+#pragma config FNOSC = PRI        
 #pragma config IESO = OFF                
 
-// FOSC
-#pragma config POSCMD = NONE              // Primary Oscillator Source (XT Oscillator Mode)
-#pragma config OSCIOFNC = OFF           // OSC2 Pin Function (OSC2 pin has clock out function)
-#pragma config FCKSM = CSDCMD           // Clock Switching and Monitor (Both Clock Switching and Fail-Safe Clock Monitor are disabled)
+// FOSC  
+#pragma config POSCMD = HS              // HS Crystal Oscillator Mode (for 8MHz crystal)
+#pragma config OSCIOFNC = OFF           // OSC2 pin has clock out function
+#pragma config FCKSM = CSDCMD           // Clock switching and monitor disabled
 
 // FWDT - Disable watchdog for now to isolate the issue
 #pragma config WDTPOST = PS32768        // Watchdog Timer Postscaler (1:32,768)
@@ -78,15 +78,6 @@ int main(void) {
 
     printf("Startup tasks created\n");
     
-    // Initialize and start system timer
-    Timer_Init();
-    Timer_Start();
-    printf("System timer initialized\n");
-    
-    // Initialize tick counter
-    OSSetTicks(0);
-
-    printf("Tick counter initialized\n");
     
     printf("Starting scheduler\n");
     printf("--- System Ready ---\n");

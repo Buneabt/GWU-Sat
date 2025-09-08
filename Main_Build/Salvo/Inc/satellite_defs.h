@@ -15,11 +15,6 @@
 #define SATELLITE_CALLSIGN     "KQ4NPQ"
 #define CALLSIGN_LENGTH        7  // Including null terminator
 
-// SD Card configuration - adjust pins to match your hardware
-#define SD_CS_TRIS      TRISBbits.TRISB0    // Chip Select as output
-#define SD_CS_PORT      LATBbits.LATB0      // Chip Select pin
-#define SD_CS_ACTIVE    0                   // Active low
-#define SD_CS_INACTIVE  1                   // Inactive high
 
 // Task Control Block Pointers
 #define TASK_SYSTEM_INIT_P     OSTCBP(1)
@@ -31,13 +26,11 @@
 #define TASK_EXPERIMENT_CTRL_P OSTCBP(7)
 #define TASK_DATA_PREP_P       OSTCBP(8)  
 #define TASK_COMM_READ_P       OSTCBP(9)
-#define TASK_SYSTEM_SHUT_DOWN  OSTCBP(10)
 
 // Task Priorities (lower number = higher priority)
 #define PRIO_SYSTEM_INIT       0 // Highest priority
 #define PRIO_START_SYSTEM      1
 #define PRIO_COMM_READ         2 
-#define PRIO_SYSTEM_SHUT_DOWN  3
 #define PRIO_STATUS_CHECK      4
 #define PRIO_COMMUNICATION     5
 #define PRIO_POWER_MGMT_NORMAL 6
@@ -59,7 +52,6 @@
 #define BINSEM_EXPERIMENT_COMPLETE OSECBP(6)
 #define BINSEM_DATA_NEEDED         OSECBP(7) 
 #define BINSEM_DATA_READY          OSECBP(8)
-#define BINSEM_SYS_SHUT_DOWN       OSECBP(9)
 
 // Helper function prototypes
 unsigned long SecondsToTicks(unsigned long seconds);

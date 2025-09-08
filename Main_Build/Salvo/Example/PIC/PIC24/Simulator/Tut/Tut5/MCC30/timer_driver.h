@@ -11,9 +11,7 @@
 void Timer_Init(void);
 void Timer_Start(void);
 void Timer_Stop(void);
-unsigned long Timer_GetTicks(void);
-void Timer_DelayMs(uint16_t milliseconds);
-void Timer_DelaySeconds(uint16_t seconds);
+void Timer_DelayTicks(uint16_t milliseconds);
 
 // Timer interrupt handler (called by RTOS)
 void Timer_InterruptHandler(void);
