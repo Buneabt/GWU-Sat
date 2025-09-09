@@ -33,7 +33,7 @@ void TaskStatusCheck(void) {
         
         // Check status every 15 seconds (1500 ticks)
         if ((current_time - last_check_time) >= STATUS_CHECK_INTERVAL) {
-            printf("\n--- Status Check --- + %lu seconds\n", current_time/1000);
+            printf("\n--- Status Check --- + %lu seconds\n", current_time/100);
             
             // Check EPS status
             printf("TaskStatusCheck: Querying EPS...\n");
@@ -114,7 +114,7 @@ void TaskStatusCheck(void) {
             printf("TaskStatusCheck: Warning - Time rollover detected\n");
             last_check_time = current_time;
         }
-        OS_Yield();
+        OS_Delay(100);
     }
 }
 

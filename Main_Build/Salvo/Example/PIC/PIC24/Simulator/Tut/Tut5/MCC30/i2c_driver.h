@@ -5,7 +5,7 @@
 #include <stdint.h>
 
 // I2C configuration constants
-#define I2C_MAX_BUFFER_SIZE     32  // Maximum bytes in single transaction
+#define I2C_MAX_BUFFER_SIZE     512  // Maximum bytes in single transaction
 #define I2C_DEFAULT_TIMEOUT     1000 // Default timeout in microseconds
 
 // I2C communication results structure

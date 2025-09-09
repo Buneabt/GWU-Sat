@@ -1,9 +1,9 @@
 #include "i2c_driver.h"
+#include "timer_driver.h"
 #include <stdio.h>
 
 // Private function prototypes
 static uint8_t I2C_WaitForFlag(volatile uint8_t* flag_register, uint8_t flag_bit, uint8_t expected_state, uint16_t timeout_us);
-static void I2C_MicrosecondDelay(uint16_t microseconds);
 static uint8_t I2C_SendStart(void);
 static uint8_t I2C_SendStop(void);
 static uint8_t I2C_SendByte(uint8_t data);
@@ -26,10 +26,10 @@ void I2C_Init(void) {
     TRISGbits.TRISG2 = 1;  // SCL1 as input
     TRISGbits.TRISG3 = 1;  // SDA1 as input
     
-    // Configure I2C baud rate for 100kHz (standard mode)
+    // Configure I2C baud rate for 80Hz (standard mode)
     // BRG = (FCY / (2 * Fscl)) - 2
-    // For FCY = 4MHz, Fscl = 100kHz: BRG = (4000000 / 200000) - 2 = 18
-    I2C1BRG = 18;
+    // For FCY = 4MHz, Fscl = 80KHz: BRG = (4000000 / 160000) - 2 = 23
+    I2C1BRG = 23;
     
     // Configure I2C control register
     I2C1CONbits.DISSLW = 1;   // Disable slew rate control for 100kHz
@@ -47,33 +47,7 @@ void I2C_Init(void) {
     
     i2c_initialized = 1;
     printf("I2C driver initialized successfully\n");
-}
-
-// Custom microsecond delay without Salvo OS calls
-// NASA Rule #4: Function fits on single page
-static void I2C_MicrosecondDelay(uint16_t microseconds) {
-    // NASA Rule #5: At least 2 assertions
-    if (microseconds == 0) {
-        return;
-    }
-    if (microseconds > 10000) {
-        microseconds = 10000; // Cap at 10ms maximum
-    }
-    
-    // Approximate delay loop for PIC24 at 4MHz instruction rate
-    // 1 instruction cycle = 0.25us at 16MHz Fosc (4MHz Fcy)
-    // Adjust these values based on actual clock frequency
-    volatile uint16_t delay_count;
-    uint16_t loop_iterations = microseconds; // Approximately 1us per iteration
-    
-    // NASA Rule #2: Fixed bounds loop
-    for (delay_count = 0; delay_count < loop_iterations; delay_count++) {
-        // Simple NOP equivalent - compiler should not optimize this away
-        __asm__ volatile ("nop");
-        __asm__ volatile ("nop");
-        __asm__ volatile ("nop");
-        __asm__ volatile ("nop");
-    }
+    return;
 }
 
 // Wait for I2C flag with timeout
@@ -99,7 +73,7 @@ static uint8_t I2C_WaitForFlag(volatile uint8_t* flag_register, uint8_t flag_bit
             return I2C_SUCCESS;
         }
         
-        I2C_MicrosecondDelay(1); // 1 microsecond delay
+        Timer_DelayTicks(1); // 1 microsecond delay
     }
     
     return I2C_ERROR_TIMEOUT;
@@ -323,7 +297,7 @@ i2c_result_t I2C_SendCommand(uint8_t device_address, uint8_t* command_data,
     // If response is expected, read it
     if (response_length > 0) {
         // Small delay before reading response (per UHF manual timing)
-        I2C_MicrosecondDelay(100);
+        Timer_DelayTicks(100);
         
         result = I2C_ReadBytes(device_address, response_length);
     } else {

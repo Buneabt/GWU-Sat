@@ -3,12 +3,12 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/Users/bogdanbunea/Documents/GitHub/GWU-Sat/Main_Build/Salvo/Example/PIC/PIC24/Simulator/Tut/Tut5/MCC30/task_system.c</file>
-            <file>file:/Users/bogdanbunea/Documents/GitHub/GWU-Sat/Main_Build/Salvo/Example/PIC/PIC24/Simulator/Tut/Tut5/MCC30/timer_driver.c</file>
-            <file>file:/Users/bogdanbunea/Documents/GitHub/GWU-Sat/Main_Build/Salvo/Example/PIC/PIC24/Simulator/Tut/Tut5/MCC30/main.c</file>
-            <file>file:/Users/bogdanbunea/Documents/GitHub/GWU-Sat/Main_Build/Salvo/Example/PIC/PIC24/Simulator/Tut/Tut5/MCC30/timer_driver.h</file>
+            <file>file:/Users/bogdanbunea/Documents/GitHub/GWU-Sat/Main_Build/Salvo/Example/PIC/PIC24/Simulator/Tut/Tut5/MCC30/i2c_driver.h</file>
+            <file>file:/Users/bogdanbunea/Documents/GitHub/GWU-Sat/Main_Build/Salvo/Example/PIC/PIC24/Simulator/Tut/Tut5/MCC30/i2c_driver.c</file>
+            <file>file:/Users/bogdanbunea/Documents/GitHub/GWU-Sat/Main_Build/Salvo/Example/PIC/PIC24/Simulator/Tut/Tut5/MCC30/uhf_driver.c</file>
+            <file>file:/Users/bogdanbunea/Documents/GitHub/GWU-Sat/Main_Build/Salvo/Example/PIC/PIC24/Simulator/Tut/Tut5/MCC30/task_idle.c</file>
+            <file>file:/Users/bogdanbunea/Documents/GitHub/GWU-Sat/Main_Build/Salvo/Example/PIC/PIC24/Simulator/Tut/Tut5/MCC30/task_data_logging.c</file>
             <file>file:/Users/bogdanbunea/Documents/GitHub/GWU-Sat/Main_Build/Salvo/Inc/satellite_defs.h</file>
-            <file>file:/Users/bogdanbunea/Documents/GitHub/GWU-Sat/Main_Build/Salvo/Src/salvohook_interrupt.c</file>
         </group>
     </open-files>
 </project-private>

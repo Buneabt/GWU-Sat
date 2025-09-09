@@ -22,7 +22,9 @@ void TaskSystemInit(void) {
 
     printf("Tick counter initialized\n");
     
-    printf("TaskSystemInit: Starting hardware init pausing ~ 10 seconds change to 30 mins for nanoracks\n");
+    printf("TaskSystemInit: Starting hardware init pausing ~ 5 seconds change to 30 mins for nanoracks\n");
+    
+    Timer_DelayTicks(500);
     
     printf("\n Before Tick Count: %lu\n", OSGetTicks());
     

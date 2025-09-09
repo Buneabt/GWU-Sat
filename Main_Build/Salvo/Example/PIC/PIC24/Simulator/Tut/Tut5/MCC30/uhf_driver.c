@@ -1,5 +1,6 @@
 #include "uhf_driver.h"
 #include "i2c_driver.h"
+#include "timer_driver.h"
 #include "satellite_defs.h"
 #include <stdio.h>
 #include <string.h>
@@ -35,12 +36,6 @@ uhf_status_t UHF_Init(void) {
     uint8_t i2c_status = I2C_DeviceReady(UHF_I2C_ADDRESS);
     if (i2c_status != I2C_SUCCESS) {
         printf("UHF: Device not found at address 0x%02X\n", UHF_I2C_ADDRESS);
-        return UHF_ERROR_I2C_NACK;
-    }
-    
-    // NASA Rule #5: Second assertion
-    if (I2C_DeviceReady(UHF_I2C_ADDRESS) != I2C_SUCCESS) {
-        printf("UHF: Device verification failed\n");
         return UHF_ERROR_I2C_NACK;
     }
     
@@ -102,9 +97,9 @@ uhf_status_t UHF_ReadSCW(uint16_t* scw) {
     uint8_t response[UHF_RESPONSE_MAX_LENGTH];
     uint8_t response_length = 0;
     
-    // Send ESTTC command to read SCW
-    // Format: ES+R22F8<CR> (assuming F8 is SCW read command)
-    uhf_status_t status = UHF_SendESTTCCommand("ES+R22F8\r", response, &response_length);
+    // Send ESTTC command to read SCW (from table: ES+R2200 without CRC)
+    // Format: ES+R2200<CR> - Status Control Word read
+    uhf_status_t status = UHF_SendESTTCCommand("ES+R2200\r", response, &response_length);
     
     if (status != UHF_OK) {
         return status;
@@ -300,11 +295,7 @@ static uhf_status_t UHF_SendESTTCCommand(const char* command, uint8_t* response,
     }
     
     // Wait for response (UHF needs time to process command)
-    // Using simple delay instead of Salvo OS delay
-    volatile uint32_t delay_count;
-    for (delay_count = 0; delay_count < 50000; delay_count++) {
-        __asm__ volatile ("nop");
-    }
+    Timer_DelayTicks(100);
     
     // Read response
     i2c_result_t read_result = I2C_ReadBytes(UHF_I2C_ADDRESS, UHF_RESPONSE_MAX_LENGTH);

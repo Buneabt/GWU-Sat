@@ -112,6 +112,13 @@ const char* UHF_StatusToString(uhf_status_t status);
  */
 uint8_t UHF_IsHealthy(uhf_telemetry_t telemetry);
 
+/**
+ * Test basic UHF communication with Status Control Word read
+ * @return UHF_OK on success, error code on failure
+ * NASA Rule #4: Function fits on single page
+ */
+uhf_status_t UHF_TestCommunication(void);
+
 // Additional ESTTC command functions can be added here following the same pattern:
 // - UHF_ConfigureBeacon()
 // - UHF_ReadCallSign() 
