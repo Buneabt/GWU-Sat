@@ -12,9 +12,10 @@
 #include <RH_RF95.h>
 
 // Pin Definitions (matching existing configuration)
-#define RFM95_CS   16
-#define RFM95_INT  21  
-#define RFM95_RST  17
+#define RFM95_CS   8
+#define RFM95_RST  4
+#define RFM95_INT  7
+
 
 // AX.25 Digipeater Configuration
 #define DIGI_FREQ_MHZ      436.42    // Outside primary antenna range (433-435 MHz)

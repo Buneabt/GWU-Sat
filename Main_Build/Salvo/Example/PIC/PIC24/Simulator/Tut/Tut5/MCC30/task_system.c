@@ -18,6 +18,24 @@ void TaskSystemInit(void) {
     Timer_Start();
     printf("System timer initialized\n");
 
+            printf("\n=== UART Loopback Test ===\n");
+printf("Checking for any UART RX activity...\n");
+
+Timer_DelayTicks(100); // Wait 1 second
+
+if (UART_DataAvailable()) {
+    printf("Data detected in UART buffer!\n");
+    while (UART_DataAvailable()) {
+        char c = UART_ReceiveByte();
+        printf("RX: 0x%02X ('%c')\n", c, (c >= 32 && c < 127) ? c : '?');
+    }
+} else {
+    printf("No UART RX data detected\n");
+}
+printf("=== End Loopback Test ===\n\n");
+    
+    
+    
     
 
     printf("Tick counter initialized\n");
